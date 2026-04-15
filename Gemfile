@@ -6,7 +6,6 @@ gem "rails", "~> 7.1.0"
 gem 'bcrypt'
 gem 'faker'
 gem "sprockets-rails"
-gem "mysql2"
 gem "puma", ">= 5.0"
 gem "importmap-rails"
 gem "turbo-rails"
@@ -21,6 +20,11 @@ gem 'will_paginate', '~> 3.3'
 gem 'bootstrap-will_paginate', '1.0.0'  
 gem 'rails-i18n'
 
+
+group :production do
+  gem "pg", "~> 1.1"
+end
+
 group :development, :test do
   gem "debug", platforms: %i[ mri mswin mswin64 mingw x64_mingw ]
 end
@@ -28,6 +32,8 @@ end
 
 group :development do
   gem "web-console"
+  gem "listen"
+  gem "mysql2"
 end
 
 
