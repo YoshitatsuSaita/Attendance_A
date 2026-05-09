@@ -3,6 +3,7 @@ version: "3.8"
 services:
   db:
     image: mysql:5.7
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     #platform: linux/amd64 #M1~4以外の方はコメントアウト
     environment:
       MYSQL_ROOT_PASSWORD: password
@@ -11,7 +12,7 @@ services:
       - "3399:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./mysql/init:/docker-entrypoint-initdb.d
+      # - ./mysql/init:/docker-entrypoint-initdb.d
     healthcheck:
       test:
         ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-ppassword"]
@@ -36,7 +37,3 @@ services:
 
 volumes:
   mysql_data:
-
-networks:
-  task_network:
-    driver: bridge
