@@ -1,8 +1,8 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info]
-  before_action :logged_in_user, only: [:index, :edit, :update, :destroy, :edit_basic_info, :update_basic_info]
+  before_action :logged_in_user, only: [:index, :edit, :update, :destroy, :edit_basic_info, :update_basic_info, :edit_all_basic_info, :update_all_basic_info]
   before_action :correct_user, only: [:edit, :update]
-  before_action :admin_user, only: [:destroy, :edit_basic_info, :update_basic_info]
+  before_action :admin_user, only: [:destroy, :edit_basic_info, :update_basic_info, :edit_all_basic_info, :update_all_basic_info]
   before_action :set_one_month, only: :show
 
   def index
@@ -94,6 +94,24 @@ class UsersController < ApplicationController
     end
     redirect_to users_url
   end
+
+  def edit_all_basic_info
+  end
+
+  def update_all_basic_info
+    success = true                                                                                 
+    User.all.each do |user|                                                                        
+      success = false unless user.update(basic_info_params)
+    end                                                                                            
+                                                        
+    if success                                                                                     
+      flash[:success] = "基本情報を更新しました。"      
+      redirect_to users_url
+    else                                       
+      flash.now[:danger] = "基本情報をに失敗しました。"
+      render :edit_all_basic_info, status: :unprocessable_entity                                   
+    end
+  end   
   
   private
 
