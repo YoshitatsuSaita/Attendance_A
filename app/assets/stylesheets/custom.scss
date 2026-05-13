@@ -109,3 +109,18 @@ p {
   transform: translate(-50%, -50%); /* ウィンドウを中央に移動 */
   z-index: 1050; /* 必要に応じてz-indexを調整して前面に表示 */
 }
+
+/* 曜日に対する文字色設定 */
+
+.sunday {
+  color: red;
+}
+
+.saturday {
+  color: blue;
+}
+
+/* 曖昧検索フォームタイトル */
+.form-title {
+  font-weight: bold;
+}

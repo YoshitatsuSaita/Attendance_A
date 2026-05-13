@@ -1,12 +1,18 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info]
-  before_action :logged_in_user, only: [:index, :edit, :update, :destroy, :edit_basic_info, :update_basic_info, :edit_all_basic_info, :update_all_basic_info]
+  before_action :logged_in_user, only: [:index, :show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info, :edit_all_basic_info, :update_all_basic_info]
   before_action :correct_user, only: [:edit, :update]
-  before_action :admin_user, only: [:destroy, :edit_basic_info, :update_basic_info, :edit_all_basic_info, :update_all_basic_info]
-  before_action :set_one_month, only: :show
+  before_action :admin_user, only: [:index, :destroy, :edit_basic_info, :update_basic_info, :edit_all_basic_info, :update_all_basic_info]
+  before_action :set_attendance_period, only: :show
+  before_action :correct_or_admin_user, only: :show
 
   def index
-    @users = User.paginate(page: params[:page])
+    if params[:q].present?
+      @users = User.where("name LIKE ?", "%#{params[:q]}%")
+                   .paginate(page: params[:page])
+    else
+      @users = User.paginate(page: params[:page])
+    end
   
     respond_to do |format|
       format.html
@@ -108,7 +114,7 @@ class UsersController < ApplicationController
       flash[:success] = "基本情報を更新しました。"      
       redirect_to users_url
     else                                       
-      flash.now[:danger] = "基本情報をに失敗しました。"
+      flash.now[:danger] = "基本情報の編集に失敗しました。"
       render :edit_all_basic_info, status: :unprocessable_entity                                   
     end
   end   

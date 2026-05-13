@@ -3,13 +3,23 @@
   <table class="table table-bordered table-condensed user-table">
     <tr>
       <td>
-        <%= link_to "◀", user_path(date: @first_day.prev_month), class: "btn btn-info btn-xs" %>
-        <%= l(@first_day, format: :middle) %> 時間管理表
-        <%= link_to "▶", user_path(date: @first_day.next_month), class: "btn btn-info btn-xs" %>
+        <% if params[:mode] == 'week' %>
+          <%# 週ナビゲーション（前週: -7日、次週: +7日、mode引き継ぎ） %>
+          <%= link_to "◀", user_path(date: @first_day - 7, mode: 'week'), class: "btn btn-info btn-xs" %>
+          <%= @first_day.year %>年 
+          <%= l(@first_day, format: "%-m/%-d") %> ~ 
+          <%= l(@last_day, format: "%-m/%-d") %> 時間管理表
+          <%= link_to "▶", user_path(date: @first_day + 7, mode: 'week'), class: "btn btn-info btn-xs" %>
+        <% else %>
+          <%# 月ナビゲーション（既存のまま） %>
+          <%= link_to "◀", user_path(date: @first_day.prev_month), class: "btn btn-info btn-xs" %>
+          <%= l(@first_day, format: :middle) %> 時間管理表
+          <%= link_to "▶", user_path(date: @first_day.next_month), class: "btn btn-info btn-xs" %>
+        <% end %>
       </td>
       <td>指定勤務時間：<%= format_basic_info(@user.work_time) %></td>
       <td colspan="3">基本時間：<%= format_basic_info(@user.basic_time) %></td>
-      <td>月初日：<%= l(@first_day, format: :short) %></td>
+      <td>初日：<%= l(@first_day, format: :short) %></td>
     </tr>
 
     <tr>
@@ -18,12 +28,20 @@
       <td>コード：</td> 
       <td></td>
       <td>出勤日数：<%= @worked_sum %>日</td>
-      <td>月末日：<%= l(@last_day, format: :short) %></td>
+      <td>末日：<%= l(@last_day, format: :short) %></td>
     </tr>
   </table>
 </div>
 <div class="btn-users-show">
-  <%= link_to "勤怠を編集", attendances_edit_one_month_user_path(date: @first_day), class: "btn btn-primary" %>
+  <%= link_to "勤怠を編集",
+      attendances_edit_one_month_user_path(date: @first_day, mode: params[:mode]),
+      class: "btn btn-primary" 
+      %>
+  <% if params[:mode] == 'week' %>
+    <%= link_to "月表示", user_path(mode: 'month'), class: "btn btn-danger pull-right" %>
+  <% else %>
+    <%= link_to "週表示", user_path(mode: 'week'),  class: "btn btn-danger pull-right" %>
+  <% end %>
 </div>
 <div>
   <table class="table table-bordered table-condensed table-hover"   id="table-attendances">
@@ -48,16 +66,16 @@
       <% @attendances.each do |day| %>
         <tr>
           <td><%= l(day.worked_on, format: :short) %></td>
-          <td><%= $days_of_the_week[day.worked_on.wday] %></td>
+          <td class="<%= weekday_color(day.worked_on) %>"><%= $days_of_the_week[day.worked_on.wday] %></td>
           <td>
             <% if btn_text = attendance_state(day) %>
               <%= link_to "#{btn_text}登録", user_attendance_path(@user, day), data: { turbo_method: :patch }, class: "btn btn-primary btn-attendance" %>
             <% end %>
           </td>
-          <td><%= day.started_at.hour if day.started_at.present? %></td>
-          <td><%= day.started_at.min if day.started_at.present? %></td>
-          <td><%= day.finished_at.hour if day.finished_at.present? %></td>
-          <td><%= day.finished_at.min if day.finished_at.present? %></td>
+          <td><%= format("%02d", day.started_at.hour) if day.started_at.present? %></td>
+          <td><%= format_quarter_hour(day.started_at) if day.started_at.present? %></td>
+          <td><%= format("%02d", day.finished_at.hour) if day.finished_at.present? %></td>
+          <td><%= format_quarter_hour(day.finished_at) if day.finished_at.present? %></td>
           <td>
             <% if day.started_at.present? && day.finished_at.present? %>
               <%= str_times = working_times(day.started_at, day.finished_at) %>

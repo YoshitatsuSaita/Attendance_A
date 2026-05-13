@@ -22,12 +22,26 @@ class ApplicationController < ActionController::Base
 
   # アクセスしたユーザーが現在ログインしているユーザーか確認します。
   def correct_user
-    redirect_to(root_url) unless current_user?(@user)
+    unless current_user?(@user)                               
+    flash[:danger] = "権限がありません。"
+    redirect_to(root_url) 
+    end
   end
 
   # システム管理権限所有かどうか判定します。
-  def admin_user
-    redirect_to root_url unless current_user.admin?
+  def admin_user 
+    unless current_user.admin?                               
+    flash[:danger] = "権限がありません。"
+    redirect_to root_url
+    end
+  end
+
+  # 本人またはシステム管理権限所有かどうか判定します。
+  def correct_or_admin_user 
+    unless (current_user.admin? || current_user?(@user))                                  
+    flash[:danger] = "権限がありません。"
+    redirect_to root_url 
+    end
   end
 
   # ページ出力前に1ヶ月分のデータの存在を確認・セットします。
@@ -50,5 +64,36 @@ class ApplicationController < ActionController::Base
   rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
     flash[:danger] = "ページ情報の取得に失敗しました、再アクセスしてください。"
     redirect_to root_url
+  end
+
+
+  # 1週間分のデータの存在を確認・セットします。
+  def set_one_week 
+    @first_day = params[:date].nil? ?
+    Date.current.beginning_of_week : params[:date].to_date
+    @last_day = @first_day + 6 
+    one_week = [*@first_day..@last_day]
+    # ユーザーに紐付く1週間分のレコードを検索し取得します。
+    @attendances = @user.attendances.where(worked_on: @first_day..@last_day).order(:worked_on)
+
+    unless one_week.count == @attendances.count # それぞれの件数（日数）が一致するか評価します。
+      ActiveRecord::Base.transaction do # トランザクションを開始します。
+        # 繰り返し処理により、1週間分の勤怠データを生成します。
+        one_week.each { |day| @user.attendances.create!(worked_on: day) }
+      end
+      @attendances = @user.attendances.where(worked_on: @first_day..@last_day).order(:worked_on)
+    end
+
+  rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
+    flash[:danger] = "ページ情報の取得に失敗しました、再アクセスしてください。"
+    redirect_to root_url
+  end
+
+  def set_attendance_period
+    if params[:mode] == 'week'
+      set_one_week
+    else
+      set_one_month  # デフォルトは月表示
+    end
   end
 end

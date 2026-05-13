@@ -1,6 +1,14 @@
 <% provide(:title, 'All Users') %>
-<h1>ユーザー一覧</h1>
 
+<h1><%= params[:q].present? ? "「#{params[:q]}」の検索結果" : "ユーザー一覧" %></h1>
+
+<div class="pull-right">
+  <p class="form-title">ユーザー名検索</p>
+  <%= form_with(url: users_path, method: :get, local: true , class: "form-inline" ) do |f| %>
+    <%= f.text_field :q, value: params[:q], placeholder: "名前で検索" , class: "form-control"%>
+    <%= f.submit "検索" , class: "btn btn-default btn-primary"%>
+  <% end %>
+</div>
 
 <div class="col-md-10 col-md-offset-1">
   <%= will_paginate %>
