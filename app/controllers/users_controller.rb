@@ -79,8 +79,6 @@ class UsersController < ApplicationController
   end
 
   def edit_basic_info
-    @user = User.find(params[:id])
-  
     respond_to do |format|
       format.html { render partial: 'users/edit_basic_info', locals: { user: @user } }
       format.turbo_stream
@@ -121,11 +119,11 @@ class UsersController < ApplicationController
   
   private
 
-    def user_params
-      params.require(:user).permit(:name, :email, :department, :password, :password_confirmation)
-    end
-    
-    def basic_info_params
-      params.require(:user).permit(:department, :basic_time, :work_time)
-    end    
+  def user_params
+    params.require(:user).permit(:name, :email, :department, :password, :password_confirmation)
+  end
+
+  def basic_info_params
+    params.require(:user).permit(:department, :basic_time, :work_time)
+  end
 end
