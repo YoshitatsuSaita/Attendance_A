@@ -16,7 +16,7 @@ services:
     branch: main
     dockerfilePath: ./Dockerfile
     plan: free # Free tier
-    region: oregon # Default region
+    region: singapore # Match Neon AP Southeast 1 (Singapore)
     healthCheckPath: /
 
     # Environment variables
