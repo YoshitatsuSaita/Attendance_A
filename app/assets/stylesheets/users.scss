@@ -14,11 +14,14 @@
 /* ユーザー勤怠情報テーブル */
 
 .table-attendances {
-  th {
+  > thead > tr > th,
+  > tbody > tr > th,
+  > tfoot > tr > th {
     vertical-align: middle;
     text-align: center;
   }
-  td {
+  > tbody > tr > td,
+  > tfoot > tr > td {
     vertical-align: middle;
     text-align: center;
   }
@@ -45,8 +48,16 @@
 /* ユーザー一覧ページ */
 
 .table-users {
-  td {
+  > thead > tr > th,
+  > tbody > tr > th,
+  > tfoot > tr > th {
     vertical-align: middle;
+    text-align: center;
+  }
+  > tbody > tr > td,
+  > tfoot > tr > td {
+    vertical-align: middle;
+    text-align: center;
   }
 }
 

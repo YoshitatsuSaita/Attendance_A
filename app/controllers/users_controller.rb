@@ -94,7 +94,7 @@ class UsersController < ApplicationController
   
     respond_to do |format|
       format.html { redirect_to users_url }
-      format.turbo_stream
+      format.turbo_stream { redirect_to users_url }
     end
   end
 

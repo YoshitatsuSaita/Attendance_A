@@ -27,6 +27,11 @@ class AttendancesController < ApplicationController
   end
 
   def edit_one_month
+    @attendances.each do |attendance|
+      attendance.next_day = (attendance.finished_at.present? && 
+                             attendance.finished_at.to_date >
+                             attendance.worked_on) ? "1" : "0"
+    end
   end
   
   def update_one_month
@@ -41,11 +46,11 @@ class AttendancesController < ApplicationController
           end
             if item[:finished_at].present?
               t = Time.parse(item[:finished_at])
-              started = item[:started_at]  # すでに変換済みのdatetime
-              base_date = (started && t.hour * 60 + t.min < started.hour * 60 + started.min) ?
-                            attendance.worked_on + 1 :
-                            attendance.worked_on
+              next_day = item.delete(:next_day) == "1"
+              base_date = next_day ? attendance.worked_on + 1 : attendance.worked_on
               item[:finished_at] = base_date.to_time.in_time_zone.change(hour: t.hour, min: t.min, sec: 0)
+            else
+              item.delete(:next_day)
             end
         attendance.update!(item)
       end
@@ -64,7 +69,7 @@ class AttendancesController < ApplicationController
   private
 
   def attendances_params
-    params.require(:user).permit(attendances: [:started_at, :finished_at, :note])[:attendances]
+    params.require(:user).permit(attendances: [:started_at, :finished_at, :note, :next_day])[:attendances]
   end
 
   def admin_or_correct_user

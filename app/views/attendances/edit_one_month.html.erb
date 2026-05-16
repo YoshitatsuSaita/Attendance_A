@@ -9,6 +9,7 @@
         <th>曜日</th>
         <th>出勤時間</th>
         <th>退勤時間</th>
+        <th>翌日</th>
         <th>在社時間</th>
         <th>備考</th>
       </tr>
@@ -22,9 +23,11 @@
             <% if (Date.current < day.worked_on) %>
               <td><%= attendance.time_field :started_at, readonly: true, class: "form-control" %></td>
               <td><%= attendance.time_field :finished_at, readonly: true, class: "form-control" %></td>
+              <td><%= attendance.check_box :next_day, disabled: true %></td>
             <% else %>
               <td><%= attendance.time_field :started_at, class: "form-control" %></td>
               <td><%= attendance.time_field :finished_at, class: "form-control" %></td>
+              <td><%= attendance.check_box :next_day %></td>
             <% end %>
             <td>
               <% if day.started_at.present? && day.finished_at.present? %>
