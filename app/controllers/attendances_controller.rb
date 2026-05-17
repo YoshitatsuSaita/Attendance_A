@@ -52,7 +52,9 @@ class AttendancesController < ApplicationController
             else
               item.delete(:next_day)
             end
-        attendance.update!(item)
+        attendance.assign_attributes(item)
+        attendance.check_in_only_invalid = true
+        attendance.save!
       end
     end
     if params[:mode] == 'week'

@@ -1,6 +1,6 @@
 class Attendance < ApplicationRecord
   belongs_to :user
-  attr_accessor :next_day
+  attr_accessor :next_day, :check_in_only_invalid
 
 
   validates :worked_on, presence: true
@@ -12,6 +12,8 @@ class Attendance < ApplicationRecord
   validate :started_at_than_finished_at_fast_if_invalid
   # 現在の日付より先の日付の情報を編集しようとした場合、無効
   validate :future_edit_invalid , on: :update
+  # 一括更新時、出勤時間のみの入力は無効
+  validate :started_at_without_finished_at_is_invalid
 
   def finished_at_is_invalid_without_a_started_at
     errors.add(:started_at, "が必要です") if started_at.blank? && finished_at.present?
@@ -25,5 +27,10 @@ class Attendance < ApplicationRecord
 
   def future_edit_invalid
     errors.add(:worked_on, "が未来の勤怠情報は無効です") if worked_on > Date.current
+  end
+
+  def started_at_without_finished_at_is_invalid
+    return unless check_in_only_invalid
+    errors.add(:finished_at, "がない出勤時間のみの入力は無効です") if started_at.present? && finished_at.blank?
   end
 end
