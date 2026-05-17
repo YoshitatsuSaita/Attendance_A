@@ -111,4 +111,23 @@ RSpec.describe User, type: :model do
       end
     end
   end
+
+  describe '#as_json' do
+    it '許可されたキーのみ含む' do
+      json = user.as_json
+      expect(json.keys).to match_array(%w[id name email department basic_time work_time created_at updated_at])
+    end
+
+    it 'password_digest を含まない' do
+      expect(user.as_json).not_to have_key('password_digest')
+    end
+
+    it 'remember_digest を含まない' do
+      expect(user.as_json).not_to have_key('remember_digest')
+    end
+
+    it 'admin を含まない' do
+      expect(user.as_json).not_to have_key('admin')
+    end
+  end
 end

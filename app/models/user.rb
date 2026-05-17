@@ -48,4 +48,8 @@ class User < ApplicationRecord
   def forget
     update_attribute(:remember_digest, nil)
   end
+
+  def as_json(options = {})
+    super({ only: [:id, :name, :email, :department, :basic_time, :work_time, :created_at, :updated_at] }.merge(options))
+  end
 end
