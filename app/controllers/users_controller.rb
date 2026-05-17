@@ -3,13 +3,17 @@ class UsersController < ApplicationController
   before_action :logged_in_user, only: [:index, :show, :edit, :update, :destroy, :edit_basic_info, :update_basic_info, :edit_all_basic_info, :update_all_basic_info]
   before_action :correct_user, only: [:edit, :update]
   before_action :admin_user, only: [:index, :destroy, :edit_basic_info, :update_basic_info, :edit_all_basic_info, :update_all_basic_info]
-  before_action :set_attendance_period, only: :show
   before_action :correct_or_admin_user, only: :show
+  before_action :set_attendance_period, only: :show
+  before_action :prevent_self_destroy, only: :destroy
+  before_action :prevent_last_admin_destroy, only: :destroy
+
 
   def index
     if params[:q].present?
-      @users = User.where("name LIKE ?", "%#{params[:q]}%")
-                   .paginate(page: params[:page]).order(:id)
+      q = ActiveRecord::Base.sanitize_sql_like(params[:q])
+      @users = User.where("name LIKE ?", "%#{q}%")
+                  .paginate(page: params[:page]).order(:id)
     else
       @users = User.paginate(page: params[:page]).order(:id)
     end
@@ -116,6 +120,8 @@ class UsersController < ApplicationController
       render :edit_all_basic_info, status: :unprocessable_entity                                   
     end
   end   
+
+
   
   private
 
@@ -125,5 +131,19 @@ class UsersController < ApplicationController
 
   def basic_info_params
     params.require(:user).permit(:department, :basic_time, :work_time)
+  end
+
+  def prevent_self_destroy
+    if current_user?(@user)
+      flash[:danger] = "自分自身を削除することはできません。"
+      redirect_to users_url
+    end
+  end
+
+  def prevent_last_admin_destroy
+    if @user.admin? && User.where(admin: true).count <= 1
+      flash[:danger] = "最後の管理者は削除できません。"
+      redirect_to users_url
+    end
   end
 end
