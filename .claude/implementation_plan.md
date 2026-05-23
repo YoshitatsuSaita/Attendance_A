@@ -1,0 +1,170 @@
+# 実装計画 — 勤怠システム(A)
+
+仕様書: https://docs.google.com/spreadsheets/d/1yOGRVDKHIOoMu2fMwCu67aZJ7jQknID71730oNQtbRc/edit?gid=728828156#gid=728828156
+
+---
+
+## 現状の把握
+
+| 項目 | 状態 |
+|------|------|
+| ユーザー認証（ログイン/ログアウト） | 実装済み |
+| 勤怠打刻・一括編集 | 実装済み |
+| ユーザー管理（管理者のみ） | 一部実装済み |
+| 申請機能（残業・勤怠変更・所属長承認） | 未実装 |
+| CSV出力・インポート | 未実装 |
+| 拠点情報管理 | 未実装 |
+| 勤怠修正ログ | 未実装 |
+| `superior`（上長）ロール | 未実装 |
+
+---
+
+## Phase 1: DBマイグレーション
+
+### 1-1. `users` テーブルにカラム追加
+
+| カラム | 型 | 説明 |
+|--------|----|------|
+| `superior` | boolean | 上長フラグ（default: false） |
+| `employee_number` | string | 社員番号 |
+| `uid` | string | カードID |
+| `designated_work_start_time` | datetime | 指定勤務開始時間 |
+
+※ 既存の `work_time` → `designated_work_end_time` へのリネームも検討
+
+### 1-2. 新テーブル作成
+
+| テーブル名 | 目的 | 主なカラム |
+|------------|------|-----------|
+| `overtime_requests` | 残業申請 | `user_id`, `superior_id`, `worked_on`, `scheduled_end_time`, `next_day`, `work_content`, `status` |
+| `attendance_change_requests` | 勤怠変更申請 | `user_id`, `superior_id`, `worked_on`, `before_started_at`, `after_started_at`, `note`, `status` |
+| `approval_requests` | 所属長承認申請 | `user_id`, `superior_id`, `target_month`, `status` |
+| `attendance_correction_logs` | 勤怠修正ログ | `user_id`, `worked_on`, `before_started_at`, `before_finished_at`, `after_started_at`, `after_finished_at`, `approver_id` |
+| `bases` | 拠点情報 | `base_number`, `name`, `attendance_type` |
+
+`status` は enum で管理: `0: none`, `1: pending`, `2: approved`, `3: rejected`
+
+---
+
+## Phase 2: モデル・アソシエーション
+
+### 2-1. `User` モデル更新
+- `superior?` / `admin?` メソッド追加
+- スコープ: `scope :superiors` / `scope :admins`
+- アソシエーション追加:
+  - `has_many :overtime_requests`
+  - `has_many :received_overtime_requests, class_name: 'OvertimeRequest', foreign_key: :superior_id`
+  - 変更申請・承認申請も同様
+
+### 2-2. 新モデル作成
+- `OvertimeRequest` / `AttendanceChangeRequest` / `ApprovalRequest` / `AttendanceCorrectionLog` / `Base`
+- 各申請モデルにバリデーション（退社 > 出社 チェックなど）
+
+---
+
+## Phase 3: 認可・アクセス制御
+
+`ApplicationController` に before_action でロール制限を追加:
+
+| メソッド名 | 対象 |
+|-----------|------|
+| `admin_user_only` | 管理ページ（管理ユーザーのみ） |
+| `superior_or_admin` | 上長以上のページ |
+| `not_admin` | 一般・上長のみのページ（管理ユーザーは不可） |
+
+---
+
+## Phase 4: 管理ユーザー機能
+
+### 4-1. ユーザー一覧
+- 自身を除く全ユーザーの表示・編集・削除
+- 編集可能項目: 名前・メール・所属・社員番号・カードID・パスワード・基本時間・指定勤務開始/終了時間
+
+### 4-2. CSVインポート（ユーザー一括登録）
+- ヘッダー: `name, email, affiliation, employee_number, uid, basic_work_time, designated_work_start_time, designated_work_end_time, superior, admin, password`
+
+### 4-3. 出勤社員一覧
+- 当日 `started_at` のみ格納されているユーザー一覧を表示
+
+### 4-4. 拠点情報 CRUD
+- 一覧 / 追加 / 編集 / 削除
+
+### 4-5. 基本情報更新ページ（ページのみ）
+
+---
+
+## Phase 5: 申請機能（一般ユーザー・上長ユーザー共通）
+
+### 5-1. 残業申請
+- 勤怠一覧の各行に「残業申請」ボタンを追加
+- フォーム項目: 日付・曜日・終了予定時間・翌日チェック・業務処理内容・指示者確認欄（上長ユーザーのみ選択可）
+- 申請後: 勤怠ページの該当行に「申請先ユーザー名 + 残業申請中」を表示
+
+### 5-2. 勤怠変更申請
+- 勤怠ページの「勤怠を編集」ボタンから編集申請ページへ遷移
+- バリデーション:
+  - 退社時間 > 出社時間
+  - 退社・出社どちらか一方のみは不可
+  - 指示者確認欄が空欄の行はエラーチェック対象外
+
+### 5-3. 所属長承認申請
+- 勤怠ページから上長を指定して申請
+- 上長未指定はエラー
+- 申請後: 勤怠ページの該当箇所に「申請先ユーザー名 + 所属長承認申請中」を表示
+
+---
+
+## Phase 6: 上長ユーザー向け申請管理機能
+
+### 6-1. 残業申請のお知らせ
+- 確認ボタン → ポップアップ表示（日付・曜日・終了予定時間・指定勤務終了時間・時間外時間・業務処理内容）
+- 指示者確認欄: `なし` / `申請中` / `承認` / `否認` を選択
+- 変更チェックボックスにチェックがない場合は反映しない
+
+### 6-2. 勤怠変更申請のお知らせ
+- 確認ボタン → ポップアップ（日付・変更前出社時間・変更後出社時間・備考）
+- 同様の承認/否認ロジック
+- 承認時: `attendance_correction_logs` にレコード作成 + `attendances` を更新
+
+### 6-3. 所属長承認申請のお知らせ
+- 確認ボタン → ポップアップ（月・指示者確認欄）
+- 同様の承認/否認ロジック
+
+### 6-4. 申請者勤怠確認（読み取り専用）
+- 「勤怠を確認するボタン」→ 申請者の申請月の勤怠ページへ遷移
+- 遷移時は月変更矢印・残業申請ボタン等を非表示
+
+---
+
+## Phase 7: CSV出力
+
+- 勤怠ページの「CSVを出力」ボタン
+- 対象: 表示月の勤怠（未承認の変更申請分は除外）
+- 出力項目: 日付ごとの出社・退社時間（最低限）
+
+---
+
+## Phase 8: 勤怠修正ログ表示
+
+- 「勤怠修正ログ（承認済）」ボタン → 承認済み編集履歴を表示
+- 表示項目: 日付・変更前出社/退社・変更後出社/退社・承認者
+
+---
+
+## Phase 9: アクセス制御テスト
+
+| チェック項目 | 内容 |
+|-------------|------|
+| 管理ユーザー | 一般・上長のページへ遷移不可 |
+| 上長・一般ユーザー | 管理ページへ遷移不可 |
+
+---
+
+## 実装順序まとめ
+
+```
+Phase 1 → Phase 2 → Phase 3 → Phase 4 → Phase 5 → Phase 6 → Phase 7 → Phase 8 → Phase 9
+  DB          モデル    認可      管理者    申請送信    申請管理    CSV出力   修正ログ    テスト
+```
+
+Phase 1〜3 が全体の基盤になるため、必ずここから着手する。

@@ -1,4 +1,4 @@
-# 勤怠システム(B)
+# 勤怠システム(A)
 
 本アプリケーションは従業員の勤怠を管理するWebアプリケーションです。
 勤怠チュートリアルで作成したアプリケーションをベースに、機能を追加しました。
@@ -44,8 +44,8 @@
 ```
 # リポジトリをクローン
 
-git clone https://github.com/YoshitatsuSaita/Attendance_B
-cd Attendance_b
+git clone https://github.com/YoshitatsuSaita/Attendance_A
+cd Attendance_a
 
 # コンテナ起動
 docker compose up -d

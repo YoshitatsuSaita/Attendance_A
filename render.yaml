@@ -11,8 +11,8 @@ services:
   # Rails Web Application
   - type: web
     runtime: docker
-    name: attendance_B
-    repo: https://github.com/YoshitatsuSaita/Attendance_B.git
+    name: attendance_A
+    repo: https://github.com/YoshitatsuSaita/Attendance_A.git
     branch: main
     dockerfilePath: ./Dockerfile
     plan: free # Free tier

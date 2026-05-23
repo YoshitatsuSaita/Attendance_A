@@ -1,0 +1,42 @@
+{
+  // Ruby LSP 設定
+  "rubyLsp.rubyVersionManager": {
+    "identifier": "rbenv"
+  },
+
+  // RuboCop 診断を有効化
+  "rubyLsp.enabledFeatures": {
+    "diagnostics": true,
+    "formatting": true,
+    "codeActions": true,
+    "completion": true,
+    "definition": true,
+    "hover": true,
+    "inlayHint": true,
+    "documentHighlights": true,
+    "documentSymbols": true,
+    "foldingRanges": true,
+    "selectionRanges": true,
+    "semanticHighlighting": true,
+    "signatureHelp": true,
+    "workspaceSymbol": true,
+    "references": true,
+    "codeLens": true,
+    "onTypeFormatting": true,
+    "rename": true
+  },
+
+  // 保存時に RuboCop 自動修正
+  "editor.formatOnSave": true,
+  "[ruby]": {
+    "editor.defaultFormatter": "Shopify.ruby-lsp",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+
+  // ruby-rubocop 拡張が入っている場合は無効化（二重表示防止）
+  "ruby.lint": {
+    "rubocop": false
+  }
+}

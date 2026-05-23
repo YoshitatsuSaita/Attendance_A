@@ -1,7 +1,6 @@
 ---
 name: coding-convention
 description: This skill should be used whenever writing, editing, or reviewing code in this project. Applies when the user asks to create a file, add a feature, fix a bug, refactor code, or any other task that involves generating or modifying source code.
-version: 1.0.0
 ---
 
 # コーディング規約
@@ -34,7 +33,7 @@ version: 1.0.0
 ## コードスタイル
 
 - インデント: スペース 2 つ（タブ禁止）
-- 1 行の最大文字数: 120 文字
+- 1 行の最大文字数: 80 文字
 - メソッドの末尾に空行を入れない
 - `do...end` と `{...}` の使い分け: 複数行は `do...end`、単行は `{...}`
 - 文字列リテラルはシングルクォート `'` を使う（式展開が必要な場合はダブルクォート `"`）
@@ -71,3 +70,47 @@ version: 1.0.0
 - マジックナンバーは定数として定義する
 - コメントは「なぜ（WHY）」を説明する場合のみ書く（何をしているかはコードで表現する）
 - 不要なコード（コメントアウトされたコード、デバッグ用 `puts` など）は残さない
+
+---
+
+## HTML/CSS 規約
+
+参考: https://qiita.com/Tech_Leaders/private/b75dd42ed8b63b51ef77
+
+### 基本方針
+
+メンテナンス性を最優先とし、**分かりやすさ・探しやすさ・再利用性・拡張性**の4点を意識してコードを書く。
+
+### クラス命名（BEM）
+
+BEM 手法でクラス名を付ける。
+
+| 種別                             | セパレータ                | 例               |
+| -------------------------------- | ------------------------- | ---------------- |
+| Block（親要素）                  | —                         | `.item`, `.form` |
+| Element（Block 内の部品）        | `__`（アンダースコア2つ） | `.item__text`    |
+| Modifier（状態・バリエーション） | `--`（ハイフン2つ）       | `.item--red`     |
+
+- 単語の区切りはハイフン `-` を使う（例: `.item-list__link--active`）
+- JavaScript から操作する要素には `js-` プレフィックスを付ける（例: `js-modal-open`）
+- クラス名は意味が想像しやすい単語を使う
+
+### CSS セレクタ
+
+- **クラスのみ**にスタイルを指定する（HTML タグへの直接指定は避ける）
+- ID へのスタイル付与は禁止（再利用性が低下するため）
+- 制限セレクタ（`div.modal` のような タグ + クラスの組み合わせ）は避ける
+- フレームワーク（Bootstrap）の汎用クラスのみ使用し、独自の汎用クラスは作らない
+
+### CSS プロパティ記述ルール
+
+- `!important` は使用禁止
+- プロパティはアルファベット順に記述する
+- 短縮可能なプロパティはまとめる（例: `margin: 0 auto` など）
+- ネストは孫要素まで（親 > 子 > 孫）に留める
+- 色の指定は可能な限り3桁の16進数短縮形を使う（例: `#fff`, `#333`）
+
+### 共通フォーマット
+
+- インデント: 半角スペース 2 つ（Ruby/HTML ともに統一）
+- コメント: `//` を使用する

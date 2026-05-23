@@ -11,7 +11,7 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[7.1].define(version: 2026_04_11_114625) do
-  create_table "attendances", charset: "utf8mb4", force: :cascade do |t|
+  create_table "attendances", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.date "worked_on"
     t.datetime "started_at"
     t.datetime "finished_at"
@@ -22,7 +22,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_04_11_114625) do
     t.index ["user_id"], name: "index_attendances_on_user_id"
   end
 
-  create_table "users", charset: "utf8mb4", force: :cascade do |t|
+  create_table "users", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name"
     t.string "email"
     t.datetime "created_at", null: false
@@ -31,8 +31,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_04_11_114625) do
     t.string "remember_digest"
     t.boolean "admin"
     t.string "department"
-    t.datetime "basic_time", default: "2026-04-12 23:00:00"
-    t.datetime "work_time", default: "2026-04-12 22:30:00"
+    t.datetime "basic_time", default: "2026-05-22 23:00:00"
+    t.datetime "work_time", default: "2026-05-22 22:30:00"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
