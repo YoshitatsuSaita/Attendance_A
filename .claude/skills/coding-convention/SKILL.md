@@ -65,6 +65,14 @@ description: This skill should be used whenever writing, editing, or reviewing c
 - パスワードは `bcrypt` でハッシュ化する（平文保存禁止）
 - 認証・認可のチェックを各コントローラアクションに実装する
 
+## Rubocop
+
+- Ruby のコードを作成・編集した後は、必ず Rubocop で静的解析を実行すること
+- 実行コマンド: `docker compose exec web bundle exec rubocop <対象ファイルパス>`
+- 警告・違反が出た場合は修正してから次の作業に進む
+- 自動修正可能な違反は `-A` オプションで一括修正できる
+  - 例: `docker compose exec web bundle exec rubocop -A <対象ファイルパス>`
+
 ## その他
 
 - マジックナンバーは定数として定義する

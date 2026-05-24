@@ -1,6 +1,26 @@
 # ユーザー情報・認証・記憶トークンを管理するモデル
 class User < ApplicationRecord
   has_many :attendances, dependent: :destroy
+  has_many :overtime_requests, dependent: :destroy
+  has_many :received_overtime_requests,
+           class_name: 'OvertimeRequest',
+           foreign_key: :superior_id,
+           dependent: :destroy,
+           inverse_of: :superior
+  has_many :attendance_change_requests, dependent: :destroy
+  has_many :received_attendance_change_requests,
+           class_name: 'AttendanceChangeRequest',
+           foreign_key: :superior_id,
+           dependent: :destroy,
+           inverse_of: :superior
+  has_many :approval_requests, dependent: :destroy
+  has_many :received_approval_requests,
+           class_name: 'ApprovalRequest',
+           foreign_key: :superior_id,
+           dependent: :destroy,
+           inverse_of: :superior
+  has_many :attendance_correction_logs, dependent: :destroy
+
   # 「remember_token」という仮想の属性を作成します。
   attr_accessor :remember_token
 
@@ -14,6 +34,10 @@ class User < ApplicationRecord
   validates :work_time, presence: true
   has_secure_password
   validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
+
+  scope :superiors, -> { where(superior: true) }
+  scope :admins, -> { where(admin: true) }
+
   before_save { self.email = email.downcase }
 
   # 渡された文字列のハッシュ値を返します。
@@ -49,6 +73,14 @@ class User < ApplicationRecord
   # ユーザーのログイン情報を破棄します。
   def forget
     update_attribute(:remember_digest, nil)
+  end
+
+  def admin?
+    admin
+  end
+
+  def superior?
+    superior
   end
 
   def as_json(options = {})

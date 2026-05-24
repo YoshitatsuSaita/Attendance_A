@@ -43,6 +43,30 @@ class ApplicationController < ActionController::Base
     redirect_to root_url
   end
 
+  # 管理ユーザーのみアクセス可（管理者専用ページ用）
+  def admin_user_only
+    return if current_user.admin?
+
+    flash[:danger] = '権限がありません。'
+    redirect_to root_url
+  end
+
+  # 上長または管理ユーザーのみアクセス可
+  def superior_or_admin
+    return if current_user.superior? || current_user.admin?
+
+    flash[:danger] = '権限がありません。'
+    redirect_to root_url
+  end
+
+  # 管理ユーザー以外（一般・上長）のみアクセス可
+  def not_admin
+    return unless current_user.admin?
+
+    flash[:danger] = '権限がありません。'
+    redirect_to root_url
+  end
+
   # ページ出力前に1ヶ月分のデータの存在を確認・セットします。
   def set_one_month
     @first_day = if params[:date].nil?

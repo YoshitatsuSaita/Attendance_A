@@ -181,8 +181,9 @@
 ## 実装順序まとめ
 
 ```
-Phase 1 → Phase 2 → Phase 3 → Phase 4 → Phase 5 → Phase 6 → Phase 7 → Phase 8 → Phase 9
-  DB          モデル    認可      管理者    申請送信    申請管理    CSV出力   修正ログ    テスト
+Phase 1 → Phase 2 → Phase 3 → Phase 5 → Phase 6 → Phase 7 → Phase 8 → Phase 4 → Phase 9
+  DB          モデル    認可      申請送信    申請管理    CSV出力   修正ログ    管理者      テスト
 ```
 
-Phase 1〜3 が全体の基盤になるため、必ずここから着手する。
+- Phase 1〜3 が全体の基盤になるため、必ずここから着手する。
+- Phase 4（管理ユーザー機能）は機能が膨大なため、一般・上長ユーザー向け機能（Phase 5〜8）を先に実装する。
