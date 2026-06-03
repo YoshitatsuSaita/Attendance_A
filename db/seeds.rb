@@ -13,13 +13,29 @@ User.create!(name: "管理者",
              email: "admin@example.com",
              password: "password",
              password_confirmation: "password",
-             admin: true)
+             admin: true,
+             superior: false)
 
 User.create!(name: "テストユーザー",
              email: "test@example.com",
              password: "password",
              password_confirmation: "password",
-             admin: false)
+             admin: false,
+             superior: false)
+
+User.create!(name: "上長A",
+             email: "manager-a@example.com",
+             password: "password",
+             password_confirmation: "password",
+             admin: false,
+             superior: true)
+
+User.create!(name: "上長B",
+             email: "manager-b@example.com",
+             password: "password",
+             password_confirmation: "password",
+             admin: false,
+             superior: true)
 
 60.times do |n|
   name  = Faker::Name.name

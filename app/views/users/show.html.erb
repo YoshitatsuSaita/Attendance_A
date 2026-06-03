@@ -5,16 +5,16 @@
       <td>
         <% if params[:mode] == 'week' %>
           <%# 週ナビゲーション（前週: -7日、次週: +7日、mode引き継ぎ） %>
-          <%= link_to "◀", user_path(date: @first_day - 7, mode: 'week'), class: "btn btn-info btn-xs" %>
-          <%= @first_day.year %>年 
-          <%= l(@first_day, format: "%-m/%-d") %> ~ 
+          <%= link_to "◀", user_path(date: @first_day - 7, mode: 'week'), class: "btn btn-primary btn-xs" %>
+          <%= @first_day.year %>年
+          <%= l(@first_day, format: "%-m/%-d") %> ~
           <%= l(@last_day, format: "%-m/%-d") %> 時間管理表
-          <%= link_to "▶", user_path(date: @first_day + 7, mode: 'week'), class: "btn btn-info btn-xs" %>
+          <%= link_to "▶", user_path(date: @first_day + 7, mode: 'week'), class: "btn btn-primary btn-xs" %>
         <% else %>
           <%# 月ナビゲーション（既存のまま） %>
-          <%= link_to "◀", user_path(date: @first_day.prev_month), class: "btn btn-info btn-xs" %>
+          <%= link_to "◀", user_path(date: @first_day.prev_month), class: "btn btn-primary btn-xs" %>
           <%= l(@first_day, format: :middle) %> 時間管理表
-          <%= link_to "▶", user_path(date: @first_day.next_month), class: "btn btn-info btn-xs" %>
+          <%= link_to "▶", user_path(date: @first_day.next_month), class: "btn btn-primary btn-xs" %>
         <% end %>
       </td>
       <td>指定勤務時間：<%= format_basic_info(@user.work_time) %></td>
@@ -25,7 +25,7 @@
     <tr>
       <td>所属：<%= @user.department.present? ? @user.department : "未所属" %></td>
       <td>名前：<%= @user.name %></td>
-      <td>コード：</td> 
+      <td>コード：</td>
       <td></td>
       <td>出勤日数：<%= @worked_sum %>日</td>
       <td>末日：<%= l(@last_day, format: :short) %></td>
@@ -35,36 +35,57 @@
 <div class="btn-users-show">
   <%= link_to "勤怠を編集",
       attendances_edit_one_month_user_path(date: @first_day, mode: params[:mode]),
-      class: "btn btn-primary" 
+      class: "btn btn-primary"
       %>
+  <%= link_to "CSVを出力", "#", class: "btn btn-primary" %>
+  <%= link_to "勤怠修正ログ（承認済）", "#", class: "btn btn-primary" %>
+  <% if current_user.superior? %>
+    <%= link_to "残業申請のお知らせ 確認", "#", class: "btn btn-warning" %>
+    <%= link_to "勤怠変更申請のお知らせ 確認", "#", class: "btn btn-warning" %>
+    <%= link_to "所属長承認申請のお知らせ 確認", "#", class: "btn btn-warning" %>
+  <% end %>
   <% if params[:mode] == 'week' %>
-    <%= link_to "月表示", user_path(mode: 'month'), class: "btn btn-danger pull-right" %>
+    <%= link_to "月表示", user_path(mode: 'month'), class: "btn btn-primary pull-right" %>
   <% else %>
-    <%= link_to "週表示", user_path(mode: 'week'),  class: "btn btn-danger pull-right" %>
+    <%= link_to "週表示", user_path(mode: 'week'),  class: "btn btn-primary pull-right" %>
   <% end %>
 </div>
 <div>
   <table class="table table-bordered table-condensed table-hover table-attendances">
     <thead>
       <tr>
+        <th rowspan="3">申請</th>
+        <th colspan="9">実績</th>
+        <th colspan="5">所定外勤務</th>
+      </tr>
+      <tr>
         <th rowspan="2">日付</th>
         <th rowspan="2">曜日</th>
         <th rowspan="2">勤怠登録</th>
-        <th colspan ="2">出勤時間</th>
-        <th colspan ="2">退勤時間</th>
+        <th colspan="2">出勤時間</th>
+        <th colspan="2">退勤時間</th>
         <th rowspan="2">在社時間</th>
         <th rowspan="2">備考</th>
-       </tr>
-       <tr>
+        <th colspan="2">終了予定時間</th>
+        <th rowspan="2">時間外時間</th>
+        <th rowspan="2">業務処理内容</th>
+        <th rowspan="2">指示者確認</th>
+      </tr>
+      <tr>
         <th>時</th>
         <th>分</th>
         <th>時</th>
         <th>分</th>
-       </tr>
+        <th>時</th>
+        <th>分</th>
+      </tr>
     </thead>
     <tbody>
       <% @attendances.each do |day| %>
         <tr>
+          <td class="table-attendances__request-cell">
+            <%= link_to "残業申請", "#", class: "btn btn-primary" %>
+          </td>
           <td><%= l(day.worked_on, format: :short) %></td>
           <td class="<%= weekday_color(day.worked_on) %>"><%= days_of_the_week[day.worked_on.wday] %></td>
           <td>
@@ -82,23 +103,40 @@
             <% end %>
           </td>
           <td><%= day.note %></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td class="attendance-show__supervisor-status"></td>
         </tr>
       <% end %>
     </tbody>
-    
+
     <tfoot>
       <!--rowspan:縦結合、colspan：横結合-->
       <tr>
-        <td colspan="2">累計日数</td>
-        <td colspan="3">総合勤務時間</td>
-        <td colspan="3">累計在社時間</td>
-        <td rowspan="2"></td>
+        <td colspan="3">累計日数</td>
+        <td colspan="5">総合勤務時間</td>
+        <td colspan="5">累計在社時間</td>
+        <td colspan="2" rowspan="2" class="table-attendances__approval-request">
+          <h4>所属長承認申請</h4>
+          <%= form_with url: "#", method: :post, local: true do |f| %>
+            <div class="form-group">
+              <%= f.label :superior_id, "申請先（上長）" %>
+              <%= f.select :superior_id,
+                  User.superiors.where.not(id: current_user.id).map { |u| [u.name, u.id] },
+                  { include_blank: "-- 選択 --" },
+                  class: "form-control" %>
+            </div>
+            <%= f.submit "申請", class: "btn btn-primary" %>
+          <% end %>
+        </td>
       </tr>
       <tr>
-        <td colspan="2"><%= @attendances.count %></td>
-        <td colspan="3"><%= format_basic_info(@user.work_time).to_f * @worked_sum %></td>
-        <td colspan="3"><%= format("%.2f", total_working_times(@attendances)) %></td>
+        <td colspan="3"><%= @attendances.count %></td>
+        <td colspan="5"><%= format_basic_info(@user.work_time).to_f * @worked_sum %></td>
+        <td colspan="5"><%= format("%.2f", total_working_times(@attendances)) %></td>
       </tr>
-    </tfoot>    
+    </tfoot>
   </table>
 </div>

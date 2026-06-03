@@ -25,6 +25,12 @@
     vertical-align: middle;
     text-align: center;
   }
+
+  > tbody > tr > td.table-attendances__request-cell {
+    padding: 3px 4px;
+    white-space: nowrap;
+    width: 1%;
+  }
 }
 
 /* 入力フォーム */
