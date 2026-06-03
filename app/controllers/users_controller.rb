@@ -18,13 +18,13 @@ class UsersController < ApplicationController
   before_action :prevent_last_admin_destroy, only: :destroy
 
   def index
+    @users = User.where.not(id: current_user.id)
     if params[:q].present?
       q = ActiveRecord::Base.sanitize_sql_like(params[:q])
-      @users = User.where('name LIKE ?', "%#{q}%")
-                   .paginate(page: params[:page]).order(:id)
-    else
-      @users = User.paginate(page: params[:page]).order(:id)
+      @users = @users.where('name LIKE ?', "%#{q}%")
     end
+    @users = @users.order(superior: :desc, id: :asc)
+                   .paginate(page: params[:page])
 
     respond_to do |format|
       format.html
@@ -144,7 +144,12 @@ class UsersController < ApplicationController
   end
 
   def basic_info_params
-    params.require(:user).permit(:department, :basic_time, :work_time)
+    params.require(:user).permit(
+      :name, :email, :department, :employee_number, :uid,
+      :password, :password_confirmation,
+      :basic_time, :work_time,
+      :designated_work_start_time, :designated_work_end_time
+    )
   end
 
   def prevent_self_destroy

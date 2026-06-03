@@ -7,7 +7,7 @@ class SessionsController < ApplicationController
     if user&.authenticate(params[:session][:password])
       log_in user
       params[:session][:remember_me] == '1' ? remember(user) : forget(user)
-      redirect_back_or user
+      redirect_back_or(user.admin? ? users_url : user)
     else
       flash.now[:danger] = '認証に失敗しました。'
       render 'new', status: :unprocessable_content

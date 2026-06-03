@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_05_24_000006) do
+ActiveRecord::Schema[7.1].define(version: 2026_06_03_020504) do
   create_table "approval_requests", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "superior_id", null: false
@@ -98,6 +98,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_05_24_000006) do
     t.string "employee_number"
     t.string "uid"
     t.datetime "designated_work_start_time"
+    t.datetime "designated_work_end_time"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
