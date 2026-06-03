@@ -2,12 +2,31 @@
 
 <h1><%= params[:q].present? ? "「#{params[:q]}」の検索結果" : "ユーザー一覧" %></h1>
 
-<div class="pull-right">
-  <p class="form-title">ユーザー名検索</p>
-  <%= form_with(url: users_path, method: :get, local: true , class: "form-inline" ) do |f| %>
-    <%= f.text_field :q, value: params[:q], placeholder: "名前で検索" , class: "form-control"%>
-    <%= f.submit "検索" , class: "btn btn-default btn-primary"%>
-  <% end %>
+<div class="clearfix">
+  <div class="pull-left file-input" data-controller="file-input">
+    <p class="form-title">CSVインポート</p>
+    <%= form_with(url: import_users_path, method: :post, multipart: true, local: true) do |f| %>
+      <div class="file-input__row">
+        <label class="btn btn-default file-input__button">
+          ファイルを選択
+          <%= f.file_field :file, class: "file-input__field",
+              data: { "file-input-target": "field",
+                      action: "change->file-input#update" } %>
+        </label>
+        <input type="text" class="form-control file-input__name" readonly
+               data-file-input-target="name">
+      </div>
+      <%= f.submit "CSVをインポート",
+          class: "btn btn-primary btn-block file-input__submit" %>
+    <% end %>
+  </div>
+  <div class="pull-right">
+    <p class="form-title">ユーザー名検索</p>
+    <%= form_with(url: users_path, method: :get, local: true, class: "form-inline") do |f| %>
+      <%= f.text_field :q, value: params[:q], placeholder: "名前で検索", class: "form-control" %>
+      <%= f.submit "検索", class: "btn btn-default btn-primary" %>
+    <% end %>
+  </div>
 </div>
 
 <div class="col-md-10 col-md-offset-1">

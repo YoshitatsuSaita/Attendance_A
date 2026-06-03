@@ -1,3 +1,5 @@
+require 'csv'
+
 # ユーザー情報・認証・記憶トークンを管理するモデル
 class User < ApplicationRecord
   has_many :attendances, dependent: :destroy
@@ -39,6 +41,39 @@ class User < ApplicationRecord
   scope :admins, -> { where(admin: true) }
 
   before_save { self.email = email.downcase }
+
+  # CSVヘッダーと取り込む属性の対応を定義します。
+  CSV_ATTRIBUTES = %w[
+    name email department employee_number uid
+    designated_work_start_time designated_work_end_time
+    password superior admin
+  ].freeze
+
+  # CSVファイルを読み込み、emailをキーにユーザーを登録・更新します。
+  def self.import(file)
+    transaction do
+      CSV.foreach(file.path, headers: true) do |row|
+        user = find_or_initialize_by(email: row['email'])
+        user.assign_attributes(
+          name: row['name'],
+          department: row['department'],
+          employee_number: row['employee_number'],
+          uid: row['uid'],
+          designated_work_start_time: row['designated_work_start_time'],
+          designated_work_end_time: row['designated_work_end_time'],
+          superior: to_boolean(row['superior']),
+          admin: to_boolean(row['admin'])
+        )
+        user.password = row['password'] if row['password'].present?
+        user.save!
+      end
+    end
+  end
+
+  # 文字列の真偽値を boolean に変換します（空欄は false 扱い）。
+  def self.to_boolean(value)
+    ActiveModel::Type::Boolean.new.cast(value) || false
+  end
 
   # 渡された文字列のハッシュ値を返します。
   def self.digest(string)

@@ -6,11 +6,12 @@ Rails.application.routes.draw do
   get    '/login', to: 'sessions#new'
   post   '/login', to: 'sessions#create'
   delete '/logout', to: 'sessions#destroy'
-  
+
   resources :users do
     collection do
       get 'edit_all_basic_info'
       patch 'update_all_basic_info'
+      post 'import'
     end
     member do
       get 'edit_basic_info'

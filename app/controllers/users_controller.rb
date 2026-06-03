@@ -6,12 +6,12 @@ class UsersController < ApplicationController
   before_action :logged_in_user,
                 only: %i[index show edit update destroy
                          edit_basic_info update_basic_info
-                         edit_all_basic_info update_all_basic_info]
+                         edit_all_basic_info update_all_basic_info import]
   before_action :correct_user, only: %i[edit update]
   before_action :admin_user,
                 only: %i[index destroy edit_basic_info
                          update_basic_info edit_all_basic_info
-                         update_all_basic_info]
+                         update_all_basic_info import]
   before_action :correct_or_admin_user, only: :show
   before_action :set_attendance_period, only: :show
   before_action :prevent_self_destroy, only: :destroy
@@ -118,6 +118,19 @@ class UsersController < ApplicationController
 
   def edit_all_basic_info
     @user = User.new
+  end
+
+  def import
+    if params[:file].blank?
+      flash[:danger] = 'CSVファイルを選択してください。'
+    else
+      User.import(params[:file])
+      flash[:success] = 'CSVをインポートしました。'
+    end
+    redirect_to users_url
+  rescue ActiveRecord::RecordInvalid => e
+    flash[:danger] = "インポートに失敗しました: #{e.message}"
+    redirect_to users_url
   end
 
   def update_all_basic_info

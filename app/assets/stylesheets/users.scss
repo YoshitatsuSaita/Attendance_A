@@ -33,6 +33,41 @@
   }
 }
 
+/* CSVインポート ファイル選択 */
+
+.file-input {
+  width: 340px;
+
+  &__row {
+    display: flex;
+  }
+
+  &__button {
+    margin-bottom: 0;
+    overflow: hidden;
+    position: relative;
+    white-space: nowrap;
+  }
+
+  &__field {
+    cursor: pointer;
+    height: 100%;
+    opacity: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+
+  &__name {
+    flex: 1;
+    margin-left: 8px;
+  }
+
+  &__submit {
+    margin-top: 10px;
+  }
+}
+
 /* 入力フォーム */
 
 .label-signup {
