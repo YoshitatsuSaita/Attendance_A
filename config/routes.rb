@@ -12,6 +12,7 @@ Rails.application.routes.draw do
       get 'edit_all_basic_info'
       patch 'update_all_basic_info'
       post 'import'
+      get 'working'
     end
     member do
       get 'edit_basic_info'

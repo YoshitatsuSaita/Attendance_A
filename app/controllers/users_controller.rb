@@ -6,12 +6,13 @@ class UsersController < ApplicationController
   before_action :logged_in_user,
                 only: %i[index show edit update destroy
                          edit_basic_info update_basic_info
-                         edit_all_basic_info update_all_basic_info import]
+                         edit_all_basic_info update_all_basic_info
+                         import working]
   before_action :correct_user, only: %i[edit update]
   before_action :admin_user,
                 only: %i[index destroy edit_basic_info
                          update_basic_info edit_all_basic_info
-                         update_all_basic_info import]
+                         update_all_basic_info import working]
   before_action :correct_or_admin_user, only: :show
   before_action :set_attendance_period, only: :show
   before_action :prevent_self_destroy, only: :destroy
@@ -118,6 +119,16 @@ class UsersController < ApplicationController
 
   def edit_all_basic_info
     @user = User.new
+  end
+
+  def working
+    dates = [Date.current.yesterday, Date.current]
+    @users = User.joins(:attendances)
+                 .where(attendances: { worked_on: dates })
+                 .where.not(attendances: { started_at: nil })
+                 .where(attendances: { finished_at: nil })
+                 .distinct
+                 .order(:employee_number)
   end
 
   def import
