@@ -1,0 +1,37 @@
+<% provide(:title, '拠点情報一覧') %>
+<h1>拠点情報一覧</h1>
+
+<div class="col-md-10 col-md-offset-1">
+  <table class="table table-condensed table-hover table-work-bases">
+    <thead>
+      <tr>
+        <th class="center"><%= WorkBase.human_attribute_name :base_number %></th>
+        <th><%= WorkBase.human_attribute_name :name %></th>
+        <th class="center"><%= WorkBase.human_attribute_name :attendance_type %></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @work_bases.each do |work_base| %>
+        <tr>
+          <td class="center"><%= work_base.base_number %></td>
+          <td><%= work_base.name %></td>
+          <td class="center">
+            <%= t("enums.work_base.attendance_type.#{work_base.attendance_type}") %>
+          </td>
+          <td class="center">
+            <%= link_to '編集', edit_work_base_path(work_base), class: "btn btn-primary btn-xs" %>
+            <%= link_to '削除', work_base,
+                data: { turbo_method: :delete,
+                        turbo_confirm: "#{work_base.name}を削除してよろしいですか？" },
+                class: "btn btn-danger btn-xs" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <% if @work_bases.empty? %>
+    <p class="center">登録されている拠点はありません。</p>
+  <% end %>
+  <%= link_to '拠点を追加', new_work_base_path, class: "btn btn-primary" %>
+</div>

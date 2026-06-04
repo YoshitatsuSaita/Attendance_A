@@ -3,7 +3,12 @@ ja:
     models:
       user: ユーザー
       attendance: 勤怠
+      work_base: 拠点
     attributes:
+      work_base:
+        base_number: 拠点番号
+        name: 拠点名
+        attendance_type: 勤怠種類
       user:
         id: ID
         name: 名前
@@ -25,3 +30,8 @@ ja:
         finished_at: 退勤時間
         note: 備考
         user: ユーザーID
+  enums:
+    work_base:
+      attendance_type:
+        clock_in: 出勤
+        clock_out: 退勤

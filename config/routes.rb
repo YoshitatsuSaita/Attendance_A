@@ -22,4 +22,6 @@ Rails.application.routes.draw do
     end
     resources :attendances, only: :update
   end
+
+  resources :work_bases, except: %i[show]
 end

@@ -14,3 +14,9 @@
 # ActiveSupport::Inflector.inflections(:en) do |inflect|
 #   inflect.acronym "RESTful"
 # end
+
+# 「work_bases」は語尾が bases のため既定で単数形が「work_basis」と
+# 推論される。WorkBase モデル・経路ヘルパーを単数 "work_base" に揃える。
+ActiveSupport::Inflector.inflections(:en) do |inflect|
+  inflect.irregular 'work_base', 'work_bases'
+end

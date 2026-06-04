@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_06_03_020504) do
+ActiveRecord::Schema[7.1].define(version: 2026_06_03_082901) do
   create_table "approval_requests", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "superior_id", null: false
@@ -61,14 +61,6 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_03_020504) do
     t.index ["user_id"], name: "index_attendances_on_user_id"
   end
 
-  create_table "bases", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.string "base_number", null: false
-    t.string "name", null: false
-    t.integer "attendance_type", default: 0, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "overtime_requests", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "superior_id", null: false
@@ -100,6 +92,14 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_03_020504) do
     t.datetime "designated_work_start_time"
     t.datetime "designated_work_end_time"
     t.index ["email"], name: "index_users_on_email", unique: true
+  end
+
+  create_table "work_bases", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.string "base_number", null: false
+    t.string "name", null: false
+    t.integer "attendance_type", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   add_foreign_key "approval_requests", "users"

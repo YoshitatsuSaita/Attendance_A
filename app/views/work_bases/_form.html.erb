@@ -1,0 +1,18 @@
+<%= form_with(model: @work_base, local: true) do |f| %>
+  <%= render 'shared/error_messages', object: @work_base %>
+
+  <%= f.label :base_number %>
+  <%= f.text_field :base_number, class: "form-control" %>
+
+  <%= f.label :name %>
+  <%= f.text_field :name, class: "form-control" %>
+
+  <%= f.label :attendance_type %>
+  <%= f.select :attendance_type,
+      WorkBase.attendance_types.keys.map { |k|
+        [t("enums.work_base.attendance_type.#{k}"), k]
+      },
+      {}, class: "form-control" %>
+
+  <%= f.submit yield(:button_text), class: "btn btn-primary btn-block" %>
+<% end %>
