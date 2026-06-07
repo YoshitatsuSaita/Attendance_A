@@ -1,8 +1,11 @@
 # 勤怠情報の登録・編集を管理するコントローラー
 class AttendancesController < ApplicationController
   before_action :set_user, only: %i[edit_one_month update_one_month]
-  before_action :logged_in_user, only: %i[update edit_one_month]
-  before_action :admin_or_correct_user,
+  before_action :logged_in_user,
+                only: %i[update edit_one_month update_one_month]
+  before_action :not_admin,
+                only: %i[update edit_one_month update_one_month]
+  before_action :correct_user_only,
                 only: %i[update edit_one_month update_one_month]
   before_action :set_attendance_period, only: :edit_one_month
 
@@ -78,7 +81,6 @@ class AttendancesController < ApplicationController
     redirect_to attendances_edit_one_month_user_url(date: params[:date],
                                                     mode: params[:mode])
   end
-  
 
   private
 
@@ -87,9 +89,10 @@ class AttendancesController < ApplicationController
                                                  note next_day])[:attendances]
   end
 
-  def admin_or_correct_user
+  # 管理者は not_admin で除外済み。ここでは本人のみ許可します。
+  def correct_user_only
     @user = User.find(params[:user_id]) if @user.blank?
-    return if current_user?(@user) || current_user.admin?
+    return if current_user?(@user)
 
     flash[:danger] = '編集権限がありません。'
     redirect_to(root_url)
