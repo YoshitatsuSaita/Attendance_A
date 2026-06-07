@@ -1,8 +1,10 @@
 /* ユーザー情報テーブル */
 
 .user-table {
-  vertical-align: middle;
-  text-align: center;
+  > tbody > tr > td {
+    text-align: center;
+    vertical-align: middle;
+  }
 }
 
 /* ユーザー情報下ボタン */
@@ -111,4 +113,18 @@
 .btn-basic-info {
   margin: 15px 0;
   width: 30%;
+}
+
+/* 残業申請モーダルウインドウ */
+
+.overtime-request__table {
+  > thead > tr > th,
+  > tbody > tr > td {
+    text-align: center;
+    vertical-align: middle;
+  }
+}
+
+.btn-overtime-request {
+  margin: 15px 10px 0 0;
 }

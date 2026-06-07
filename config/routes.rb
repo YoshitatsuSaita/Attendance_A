@@ -24,4 +24,6 @@ Rails.application.routes.draw do
   end
 
   resources :work_bases, except: %i[show]
+
+  resources :overtime_requests, only: %i[new create]
 end

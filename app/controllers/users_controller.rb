@@ -35,6 +35,11 @@ class UsersController < ApplicationController
 
   def show
     @worked_sum = @attendances.where.not(started_at: nil).count
+    @overtime_requests = @user.overtime_requests
+                              .where(worked_on: @first_day..@last_day)
+                              .includes(:superior)
+                              .order(:created_at)
+                              .index_by(&:worked_on)
     respond_to do |format|
       format.html
       format.json { render json: @user }

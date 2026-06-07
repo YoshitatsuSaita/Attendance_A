@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_06_03_082901) do
+ActiveRecord::Schema[7.1].define(version: 2026_06_07_010101) do
   create_table "approval_requests", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "superior_id", null: false
@@ -89,8 +89,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_03_082901) do
     t.boolean "superior", default: false, null: false
     t.string "employee_number"
     t.string "uid"
-    t.datetime "designated_work_start_time"
-    t.datetime "designated_work_end_time"
+    t.datetime "designated_work_start_time", default: "2000-01-01 00:00:00"
+    t.datetime "designated_work_end_time", default: "2000-01-01 09:00:00"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
