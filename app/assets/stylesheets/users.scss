@@ -13,6 +13,24 @@
   margin-top: -10px;
   margin-bottom: 10px;
 }
+
+/* 上長向け 各種申請のお知らせリンク */
+
+.notice-links {
+  margin-bottom: 10px;
+
+  &__link,
+  &__link:hover,
+  &__link:focus {
+    color: #333;
+  }
+
+  &__link--alert,
+  &__link--alert:hover,
+  &__link--alert:focus {
+    color: #c00;
+  }
+}
 /* ユーザー勤怠情報テーブル */
 
 .table-attendances {

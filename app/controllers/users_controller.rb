@@ -40,6 +40,7 @@ class UsersController < ApplicationController
                               .includes(:superior)
                               .order(:created_at)
                               .index_by(&:worked_on)
+    set_pending_request_counts
     respond_to do |format|
       format.html
       format.json { render json: @user }
@@ -166,6 +167,18 @@ class UsersController < ApplicationController
   end
 
   private
+
+  # 上長が受け取った未処理（申請中）の各種申請件数をセットする
+  def set_pending_request_counts
+    return unless current_user.superior?
+
+    @pending_overtime_count =
+      current_user.received_overtime_requests.status_pending.count
+    @pending_change_count =
+      current_user.received_attendance_change_requests.status_pending.count
+    @pending_approval_count =
+      current_user.received_approval_requests.status_pending.count
+  end
 
   def user_params
     params.require(:user).permit(:name, :email, :department, :password,
