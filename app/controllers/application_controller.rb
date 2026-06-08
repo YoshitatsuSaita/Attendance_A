@@ -67,6 +67,14 @@ class ApplicationController < ActionController::Base
     redirect_to root_url
   end
 
+  # 上長ユーザーのみアクセス可（申請承認ページ用）
+  def superior_user
+    return if current_user.superior?
+
+    flash[:danger] = '権限がありません。'
+    redirect_to root_url
+  end
+
   # ページ出力前に1ヶ月分のデータの存在を確認・セットします。
   def set_one_month
     @first_day = if params[:date].nil?

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_06_07_010101) do
+ActiveRecord::Schema[7.1].define(version: 2026_06_09_010101) do
   create_table "approval_requests", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "superior_id", null: false
@@ -32,6 +32,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_07_010101) do
     t.integer "status", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "before_finished_at"
+    t.datetime "after_finished_at"
     t.index ["superior_id"], name: "index_attendance_change_requests_on_superior_id"
     t.index ["user_id"], name: "index_attendance_change_requests_on_user_id"
   end

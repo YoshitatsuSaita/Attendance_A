@@ -40,6 +40,11 @@ class UsersController < ApplicationController
                               .includes(:superior)
                               .order(:created_at)
                               .index_by(&:worked_on)
+    @attendance_change_requests = @user.attendance_change_requests
+                                       .where(worked_on: @first_day..@last_day)
+                                       .includes(:superior)
+                                       .order(:created_at)
+                                       .index_by(&:worked_on)
     set_pending_request_counts
     respond_to do |format|
       format.html

@@ -1,13 +1,11 @@
 # 勤怠情報の登録・編集を管理するコントローラー
 class AttendancesController < ApplicationController
-  before_action :set_user, only: %i[edit_one_month update_one_month]
-  before_action :logged_in_user,
-                only: %i[update edit_one_month update_one_month]
-  before_action :not_admin,
-                only: %i[update edit_one_month update_one_month]
-  before_action :correct_user_only,
-                only: %i[update edit_one_month update_one_month]
+  before_action :set_user, only: :edit_one_month
+  before_action :logged_in_user, only: %i[update edit_one_month]
+  before_action :not_admin, only: %i[update edit_one_month]
+  before_action :correct_user_only, only: %i[update edit_one_month]
   before_action :set_attendance_period, only: :edit_one_month
+  before_action :set_superiors, only: :edit_one_month
 
   UPDATE_ERROR_MSG = '勤怠登録に失敗しました。やり直してください。'.freeze
 
@@ -43,50 +41,11 @@ class AttendancesController < ApplicationController
     end
   end
 
-  def update_one_month
-    ActiveRecord::Base.transaction do
-      attendances_params.each do |id, item|
-        attendance = Attendance.find(id)
-        next if attendance.worked_on > Date.current
-
-        if item[:started_at].present?
-          t = Time.zone.parse(item[:started_at])
-          item[:started_at] = attendance.worked_on.to_time.in_time_zone.change(
-            hour: t.hour, min: t.min, sec: 0
-          )
-        end
-        if item[:finished_at].present?
-          t = Time.zone.parse(item[:finished_at])
-          next_day = item.delete(:next_day) == '1'
-          base_date = next_day ? attendance.worked_on + 1 : attendance.worked_on
-          item[:finished_at] =
-            base_date.to_time.in_time_zone.change(hour: t.hour, min: t.min,
-                                                  sec: 0)
-        else
-          item.delete(:next_day)
-        end
-        attendance.assign_attributes(item)
-        attendance.check_in_only_invalid = true
-        attendance.save!
-      end
-    end
-    flash[:success] = if params[:mode] == 'week'
-                        '1週間分の勤怠情報を更新しました。'
-                      else
-                        '1ヶ月分の勤怠情報を更新しました。'
-                      end
-    redirect_to user_url(date: params[:date], mode: params[:mode])
-  rescue ActiveRecord::RecordInvalid # トランザクションによるエラーの分岐です。
-    flash[:danger] = '無効な入力データがあった為、更新をキャンセルしました。'
-    redirect_to attendances_edit_one_month_user_url(date: params[:date],
-                                                    mode: params[:mode])
-  end
-
   private
 
-  def attendances_params
-    params.require(:user).permit(attendances: %i[started_at finished_at
-                                                 note next_day])[:attendances]
+  # 申請先（指示者）候補は上長ユーザー。上長本人の編集では自身を除外する。
+  def set_superiors
+    @superiors = User.superiors.where.not(id: current_user.id)
   end
 
   # 管理者は not_admin で除外済み。ここでは本人のみ許可します。

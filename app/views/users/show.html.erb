@@ -38,7 +38,9 @@
 <% if current_user.superior? %>
   <div class="notice-links">
     <div class="notice-links__item">
-      <%= link_to "残業申請のお知らせ 確認", "#",
+      <%= link_to "残業申請のお知らせ 確認",
+          received_overtime_requests_path(date: @first_day, mode: params[:mode]),
+          data: { turbo_frame: 'modal' },
           class: notice_link_class(@pending_overtime_count) %>
     </div>
     <div class="notice-links__item">
@@ -127,7 +129,10 @@
           <td></td>
           <td class="attendance-show__supervisor-status">
             <% if (overtime = @overtime_requests[day.worked_on]) %>
-              <%= "#{overtime.superior.name} #{overtime_status_label(overtime)}" %>
+              <div><%= "#{overtime.superior.name} #{overtime_status_label(overtime)}" %></div>
+            <% end %>
+            <% if (change = @attendance_change_requests[day.worked_on]) %>
+              <div><%= "#{change.superior.name} #{attendance_change_status_label(change)}" %></div>
             <% end %>
           </td>
         </tr>
