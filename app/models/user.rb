@@ -36,6 +36,7 @@ class User < ApplicationRecord
   validates :work_time, presence: true
   has_secure_password
   validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
+  validate :password_required_with_confirmation
 
   scope :superiors, -> { where(superior: true) }
   scope :admins, -> { where(admin: true) }
@@ -121,5 +122,17 @@ class User < ApplicationRecord
   def as_json(options = {})
     super({ only: %i[id name email department basic_time work_time
                      created_at updated_at] }.merge(options))
+  end
+
+  private
+
+  # 再入力欄のみ入力された場合（password 本体が空）は変更失敗とする。
+  # has_secure_password の確認検証は password が空だと allow_blank で
+  # スキップされるため、ここで明示的に弾く。
+  def password_required_with_confirmation
+    return if password_confirmation.blank?
+    return if password.present?
+
+    errors.add(:password, :blank)
   end
 end

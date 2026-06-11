@@ -1,66 +1,84 @@
-<% provide(:class_text, 'basic-info') %>
-<% provide(:button_text, '更新') %>
-
-<%= turbo_frame_tag 'modal' do %>
-  <div class="modal" style="display: block;" data-controller="edit-basic-info">
-    <div class="modal-dialog modal-lg modal-dialog-center">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-action="edit-basic-info#close" aria-label="Close">
-            <span aria-hidden="true">×</span>
-          </button>
-          <h1 class="modal-title">基本情報編集</h1>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-6 col-md-offset-3">
-              <%= form_with(model: @user, url: update_basic_info_user_path(@user), local: false, method: :patch, data: { action: "submit->edit-basic-info#submit" }) do |f| %>
-                <%= render 'shared/error_messages', object: @user %>
-
-                <%= f.label :name, class: "label-#{yield(:class_text)}" %>
-                <%= f.text_field :name, class: 'form-control' %>
-
-                <%= f.label :email, class: "label-#{yield(:class_text)}" %>
-                <%= f.email_field :email, class: 'form-control' %>
-
-                <%= f.label :department, class: "label-#{yield(:class_text)}" %>
-                <%= f.text_field :department, class: 'form-control' %>
-
-                <%= f.label :employee_number, class: "label-#{yield(:class_text)}" %>
-                <%= f.text_field :employee_number, class: 'form-control' %>
-
-                <%= f.label :uid, class: "label-#{yield(:class_text)}" %>
-                <%= f.text_field :uid, class: 'form-control' %>
-
-                <%= f.label :password, class: "label-#{yield(:class_text)}" %>
-                <%= f.password_field :password, class: 'form-control', placeholder: '変更する場合のみ入力' %>
-
-                <%= f.label :password_confirmation, class: "label-#{yield(:class_text)}" %>
-                <%= f.password_field :password_confirmation, class: 'form-control' %>
-
-                <%= f.label :basic_time, class: "label-#{yield(:class_text)}" %>
-                <%= f.time_field :basic_time, class: 'form-control' %>
-
-                <%= f.label :work_time, class: "label-#{yield(:class_text)}" %>
-                <%= f.time_field :work_time, class: 'form-control' %>
-
-                <%= f.label :designated_work_start_time, class: "label-#{yield(:class_text)}" %>
-                <%= f.time_field :designated_work_start_time, class: 'form-control' %>
-
-                <%= f.label :designated_work_end_time, class: "label-#{yield(:class_text)}" %>
-                <%= f.time_field :designated_work_end_time, class: 'form-control' %>
-
-                <div class="center">
-                  <%= f.submit yield(:button_text), class: "btn btn-primary btn-#{yield(:class_text)}" %>
-                  <button type="button" class="btn btn-default btn-<%= yield(:class_text) %>" data-action="edit-basic-info#close">
-                    キャンセル
-                  </button>
-                </div>
-              <% end %>
-            </div>
-          </div>
-        </div>
-      </div>
+<%# ユーザー一覧のアコーディオン内に表示する基本情報編集フォーム %>
+<%# 同一ページに複数フォームが並ぶため id を user 毎に一意化する %>
+<% pfx = "user-#{user.id}" %>
+<%= form_with(model: user, url: update_basic_info_user_path(user),
+              method: :patch, class: 'basic-info-form') do |f| %>
+  <div class="row">
+    <div class="col-md-6 basic-info-form__group">
+      <%= f.label :name, class: 'basic-info-form__label', for: "#{pfx}-name" %>
+      <%= f.text_field :name, class: 'form-control', id: "#{pfx}-name" %>
     </div>
+    <div class="col-md-6 basic-info-form__group">
+      <%= f.label :email, class: 'basic-info-form__label', for: "#{pfx}-email" %>
+      <%= f.email_field :email, class: 'form-control', id: "#{pfx}-email" %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 basic-info-form__group">
+      <%= f.label :department, class: 'basic-info-form__label',
+                  for: "#{pfx}-department" %>
+      <%= f.text_field :department, class: 'form-control',
+                       id: "#{pfx}-department" %>
+    </div>
+    <div class="col-md-6 basic-info-form__group">
+      <%= f.label :employee_number, class: 'basic-info-form__label',
+                  for: "#{pfx}-employee-number" %>
+      <%= f.text_field :employee_number, class: 'form-control',
+                       id: "#{pfx}-employee-number" %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 basic-info-form__group">
+      <%= f.label :uid, class: 'basic-info-form__label', for: "#{pfx}-uid" %>
+      <%= f.text_field :uid, class: 'form-control', id: "#{pfx}-uid" %>
+    </div>
+    <div class="col-md-6 basic-info-form__group">
+      <%= f.label :work_time, class: 'basic-info-form__label',
+                  for: "#{pfx}-work-time" %>
+      <%= f.time_field :work_time, class: 'form-control',
+                       id: "#{pfx}-work-time" %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 basic-info-form__group">
+      <%= f.label :designated_work_start_time, class: 'basic-info-form__label',
+                  for: "#{pfx}-start-time" %>
+      <%= f.time_field :designated_work_start_time, class: 'form-control',
+                       id: "#{pfx}-start-time" %>
+    </div>
+    <div class="col-md-6 basic-info-form__group">
+      <%= f.label :designated_work_end_time, class: 'basic-info-form__label',
+                  for: "#{pfx}-end-time" %>
+      <%= f.time_field :designated_work_end_time, class: 'form-control',
+                       id: "#{pfx}-end-time" %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 basic-info-form__group">
+      <%= f.label :password, class: 'basic-info-form__label',
+                  for: "#{pfx}-password" %>
+      <%= f.password_field :password, class: 'form-control',
+                           id: "#{pfx}-password",
+                           placeholder: '変更する場合のみ入力' %>
+    </div>
+    <div class="col-md-6 basic-info-form__group">
+      <%= f.label :password_confirmation, class: 'basic-info-form__label',
+                  for: "#{pfx}-password-confirmation" %>
+      <%= f.password_field :password_confirmation, class: 'form-control',
+                           id: "#{pfx}-password-confirmation",
+                           placeholder: '変更する場合のみ入力' %>
+    </div>
+  </div>
+
+  <div class="center basic-info-form__actions">
+    <%= f.submit '更新', class: 'btn btn-primary' %>
+    <button type="button" class="btn btn-default"
+            data-action="basic-info-accordion#closeAll">
+      閉じる
+    </button>
   </div>
 <% end %>

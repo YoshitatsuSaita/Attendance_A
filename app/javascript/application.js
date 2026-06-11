@@ -4,8 +4,8 @@ import "@hotwired/turbo-rails";
 import { Application } from "@hotwired/stimulus";
 const application = Application.start();
 
-import EditBasicInfoController from "controllers/edit_basic_info_controller";
-application.register("edit-basic-info", EditBasicInfoController);
+import BasicInfoAccordionController from "controllers/basic_info_accordion_controller";
+application.register("basic-info-accordion", BasicInfoAccordionController);
 
 import FileInputController from "controllers/file_input_controller";
 application.register("file-input", FileInputController);

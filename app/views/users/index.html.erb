@@ -31,7 +31,8 @@
 
 <div class="col-md-10 col-md-offset-1">
   <%= will_paginate %>
-  <table class="table table-condensed table-hover table-users">
+  <table class="table table-condensed table-hover table-users"
+         data-controller="basic-info-accordion">
     <thead>
       <tr>
         <th><%= User.human_attribute_name :name %></th>
@@ -48,8 +49,19 @@
           <% end %>
         </td>
         <td class="center">
-          <%= link_to '基本情報編集', edit_basic_info_user_path(user), data: { turbo_frame: 'modal' }, class: "btn btn-primary" %>
-          <%= link_to "削除", user, data: { turbo_method: :delete, turbo_confirm: "#{user.name}を削除してよろしいですか？" }, class: "btn btn-primary" %>
+          <button type="button" class="btn btn-primary"
+                  data-action="basic-info-accordion#toggle"
+                  data-basic-info-accordion-id-param="<%= user.id %>">
+            基本情報編集
+          </button>
+          <%= link_to "削除", user, data: { turbo_method: :delete, turbo_confirm: "#{user.name}を削除してよろしいですか？" }, class: "btn btn-danger" %>
+        </td>
+      </tr>
+      <tr class="basic-info-accordion__panel"
+          data-basic-info-accordion-target="panel"
+          data-user-id="<%= user.id %>" hidden>
+        <td colspan="2">
+          <%= render 'edit_basic_info', user: user %>
         </td>
       </tr>
     <% end %>

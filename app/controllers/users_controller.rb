@@ -1,19 +1,18 @@
 # ユーザーの登録・編集・削除・勤怠表示を管理するコントローラー
 class UsersController < ApplicationController
   before_action :set_user,
-                only: %i[show edit update destroy edit_basic_info
-                         update_basic_info]
+                only: %i[show edit update destroy update_basic_info]
   before_action :logged_in_user,
                 only: %i[index show edit update destroy
-                         edit_basic_info update_basic_info
+                         update_basic_info
                          edit_all_basic_info update_all_basic_info
                          import working]
   before_action :correct_user, only: %i[edit update]
   before_action :correct_or_superior_user, only: :show
   before_action :admin_user,
-                only: %i[index destroy edit_basic_info
-                         update_basic_info edit_all_basic_info
-                         update_all_basic_info import working]
+                only: %i[index destroy update_basic_info
+                         edit_all_basic_info update_all_basic_info
+                         import working]
   before_action :not_admin, only: :show
   before_action :set_attendance_period, only: :show
   before_action :prevent_self_destroy, only: :destroy
@@ -103,15 +102,6 @@ class UsersController < ApplicationController
     respond_to do |format|
       format.html { redirect_to users_url }
       format.json { head :no_content }
-    end
-  end
-
-  def edit_basic_info
-    respond_to do |format|
-      format.html do
-        render partial: 'users/edit_basic_info', locals: { user: @user }
-      end
-      format.turbo_stream
     end
   end
 
