@@ -12,3 +12,6 @@ application.register("file-input", FileInputController);
 
 import OvertimeRequestController from "controllers/overtime_request_controller";
 application.register("overtime-request", OvertimeRequestController);
+
+import AttendanceChangeRequestController from "controllers/attendance_change_request_controller";
+application.register("attendance-change-request", AttendanceChangeRequestController);

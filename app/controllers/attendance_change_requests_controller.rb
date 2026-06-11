@@ -2,6 +2,32 @@
 class AttendanceChangeRequestsController < ApplicationController
   before_action :logged_in_user
   before_action :not_admin
+  before_action :superior_user, only: %i[received review]
+
+  # 上長宛ての申請中の勤怠変更申請（お知らせ）を申請者ごとに表示する
+  def received
+    @change_requests_by_user =
+      current_user.received_attendance_change_requests
+                  .status_pending
+                  .includes(:user)
+                  .order(:worked_on)
+                  .group_by(&:user)
+    render partial: 'attendance_change_requests/received'
+  end
+
+  # 変更チェックの付いた行のみ指示者確認欄（status）を反映する
+  def review
+    ActiveRecord::Base.transaction do
+      review_params.each do |id, item|
+        next unless item[:apply] == '1'
+
+        current_user.received_attendance_change_requests
+                    .find(id).update!(status: item[:status])
+      end
+    end
+    flash[:success] = '勤怠変更申請を更新しました。'
+    redirect_to user_url(current_user, date: params[:date], mode: params[:mode])
+  end
 
   def create
     ActiveRecord::Base.transaction do
@@ -44,5 +70,10 @@ class AttendanceChangeRequestsController < ApplicationController
     params.require(:user).permit(
       attendances: %i[started_at finished_at next_day note superior_id]
     )[:attendances]
+  end
+
+  def review_params
+    params.permit(attendance_change_requests: %i[status apply])
+          .fetch(:attendance_change_requests, {})
   end
 end

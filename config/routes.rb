@@ -29,5 +29,10 @@ Rails.application.routes.draw do
       patch :review
     end
   end
-  resources :attendance_change_requests, only: %i[create]
+  resources :attendance_change_requests, only: %i[create] do
+    collection do
+      get :received
+      patch :review
+    end
+  end
 end

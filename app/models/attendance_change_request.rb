@@ -15,12 +15,29 @@ class AttendanceChangeRequest < ApplicationRecord
   validate :finished_after_started
 
   before_validation :assemble_after_times
+  after_update :reflect_to_attendance,
+               if: -> { saved_change_to_status? && status_approved? }
 
   private
 
-  # 入力時刻を worked_on（退社が翌日なら翌日）の時刻に変換する
+  # 承認時、申請者の該当日の勤怠（実績）へ変更後の時刻・備考を反映する
+  def reflect_to_attendance
+    attendance = user.attendances.find_by(worked_on: worked_on)
+    return unless attendance
+
+    attendance.update!(started_at: after_started_at,
+                       finished_at: after_finished_at,
+                       note: note)
+  end
+
+  # 入力時刻を worked_on（退社が翌日なら翌日）の時刻に変換する。
+  # 申請後の更新（承認など）では時刻入力が無いため、既存値を保持する。
   def assemble_after_times
-    self.after_started_at = build_time(started_time, worked_on)
+    if started_time.present?
+      self.after_started_at = build_time(started_time, worked_on)
+    end
+    return if finished_time.blank?
+
     self.after_finished_at = build_time(finished_time, finished_base_date)
   end
 

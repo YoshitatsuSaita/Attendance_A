@@ -161,3 +161,22 @@
 .btn-overtime-request {
   margin: 15px 10px 0 0;
 }
+
+/* 勤怠変更申請モーダルウインドウ */
+
+.attendance-change-request__table {
+  > thead > tr > th,
+  > tbody > tr > td {
+    text-align: center;
+    vertical-align: middle;
+  }
+}
+
+.attendance-change-request__applicant {
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.btn-attendance-change-request {
+  margin: 15px 10px 0 0;
+}

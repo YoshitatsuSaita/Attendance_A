@@ -54,7 +54,9 @@
           class: notice_link_class(@pending_overtime_count) %>
     </div>
     <div class="notice-links__item">
-      <%= link_to "【勤怠変更申請のお知らせ #{@pending_change_count}件】", "#",
+      <%= link_to "【勤怠変更申請のお知らせ #{@pending_change_count}件】",
+          received_attendance_change_requests_path(date: @first_day, mode: params[:mode]),
+          data: { turbo_frame: 'modal' },
           class: notice_link_class(@pending_change_count) %>
     </div>
     <div class="notice-links__item">
