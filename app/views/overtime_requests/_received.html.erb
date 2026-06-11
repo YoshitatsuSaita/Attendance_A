@@ -9,54 +9,55 @@
           <h1 class="modal-title">残業申請のお知らせ</h1>
         </div>
         <div class="modal-body">
-          <% if @overtime_requests.empty? %>
+          <% if @overtime_requests_by_user.empty? %>
             <p class="center">未処理の残業申請はありません。</p>
           <% else %>
             <%= form_with(url: review_overtime_requests_path, method: :patch, data: { turbo: false }) do %>
               <%= hidden_field_tag :date, params[:date] %>
               <%= hidden_field_tag :mode, params[:mode] %>
-              <table class="table table-bordered table-condensed overtime-request__table">
-                <thead>
-                  <tr>
-                    <th>申請者</th>
-                    <th>日付</th>
-                    <th>曜日</th>
-                    <th>終了予定時間</th>
-                    <th>指定勤務終了時間</th>
-                    <th>時間外時間</th>
-                    <th>業務処理内容</th>
-                    <th>指示者確認</th>
-                    <th>変更</th>
-                    <th>勤怠</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% @overtime_requests.each do |req| %>
+              <% @overtime_requests_by_user.each do |user, requests| %>
+                <h4 class="overtime-request__applicant">【<%= user.name %> からの残業申請】</h4>
+                <table class="table table-bordered table-condensed overtime-request__table">
+                  <thead>
                     <tr>
-                      <td><%= req.user.name %></td>
-                      <td><%= l(req.worked_on, format: :short) %></td>
-                      <td class="<%= weekday_color(req.worked_on) %>">
-                        <%= days_of_the_week[req.worked_on.wday] %>
-                      </td>
-                      <td><%= req.scheduled_end_time&.strftime('%H:%M') %></td>
-                      <td><%= req.designated_end_time&.strftime('%H:%M') %></td>
-                      <td><%= format_overtime_duration(req.overtime_minutes) %></td>
-                      <td><%= req.work_content %></td>
-                      <td>
-                        <%= select_tag "overtime_requests[#{req.id}][status]",
-                              options_for_select(overtime_status_options, req.status),
-                              class: 'form-control' %>
-                      </td>
-                      <td>
-                        <%= check_box_tag "overtime_requests[#{req.id}][apply]", '1', false %>
-                      </td>
-                      <td>
-                        <%= link_to '勤怠を確認', '#', class: 'btn btn-default btn-xs' %>
-                      </td>
+                      <th>日付</th>
+                      <th>曜日</th>
+                      <th>終了予定時間</th>
+                      <th>指定勤務終了時間</th>
+                      <th>時間外時間</th>
+                      <th>業務処理内容</th>
+                      <th>指示者確認</th>
+                      <th>変更</th>
+                      <th>勤怠</th>
                     </tr>
-                  <% end %>
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    <% requests.each do |req| %>
+                      <tr>
+                        <td><%= l(req.worked_on, format: :short) %></td>
+                        <td class="<%= weekday_color(req.worked_on) %>">
+                          <%= days_of_the_week[req.worked_on.wday] %>
+                        </td>
+                        <td><%= req.scheduled_end_time&.strftime('%H:%M') %></td>
+                        <td><%= req.designated_end_time&.strftime('%H:%M') %></td>
+                        <td><%= format_overtime_duration(req.overtime_minutes) %></td>
+                        <td><%= req.work_content %></td>
+                        <td>
+                          <%= select_tag "overtime_requests[#{req.id}][status]",
+                                options_for_select(overtime_status_options, req.status),
+                                class: 'form-control' %>
+                        </td>
+                        <td>
+                          <%= check_box_tag "overtime_requests[#{req.id}][apply]", '1', false %>
+                        </td>
+                        <td>
+                          <%= link_to '勤怠を確認', '#', class: 'btn btn-default btn-xs' %>
+                        </td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+              <% end %>
 
               <div class="center">
                 <%= submit_tag '変更を反映', class: 'btn btn-primary btn-overtime-request' %>

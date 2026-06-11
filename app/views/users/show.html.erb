@@ -38,17 +38,17 @@
 <% if current_user.superior? %>
   <div class="notice-links">
     <div class="notice-links__item">
-      <%= link_to "残業申請のお知らせ 確認",
+      <%= link_to "【残業申請のお知らせ #{@pending_overtime_count}件】",
           received_overtime_requests_path(date: @first_day, mode: params[:mode]),
           data: { turbo_frame: 'modal' },
           class: notice_link_class(@pending_overtime_count) %>
     </div>
     <div class="notice-links__item">
-      <%= link_to "勤怠変更申請のお知らせ 確認", "#",
+      <%= link_to "【勤怠変更申請のお知らせ #{@pending_change_count}件】", "#",
           class: notice_link_class(@pending_change_count) %>
     </div>
     <div class="notice-links__item">
-      <%= link_to "所属長承認申請のお知らせ 確認", "#",
+      <%= link_to "【所属長承認申請のお知らせ #{@pending_approval_count}件】", "#",
           class: notice_link_class(@pending_approval_count) %>
     </div>
   </div>
@@ -123,12 +123,14 @@
             <% end %>
           </td>
           <td><%= day.note %></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
+          <% overtime = @overtime_requests[day.worked_on] %>
+          <% approved_overtime = overtime if overtime&.status_approved? %>
+          <td><%= format("%02d", scheduled_end_hour(approved_overtime)) if approved_overtime %></td>
+          <td><%= format_quarter_hour(approved_overtime.scheduled_end_time) if approved_overtime %></td>
+          <td><%= format_overtime_duration(approved_overtime.overtime_minutes) if approved_overtime %></td>
+          <td><%= approved_overtime&.work_content %></td>
           <td class="attendance-show__supervisor-status">
-            <% if (overtime = @overtime_requests[day.worked_on]) %>
+            <% if overtime %>
               <div><%= "#{overtime.superior.name} #{overtime_status_label(overtime)}" %></div>
             <% end %>
             <% if (change = @attendance_change_requests[day.worked_on]) %>

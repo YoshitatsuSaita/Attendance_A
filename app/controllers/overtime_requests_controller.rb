@@ -11,12 +11,13 @@ class OvertimeRequestsController < ApplicationController
     render partial: 'overtime_requests/form'
   end
 
-  # 上長宛ての申請中の残業申請（お知らせ）をモーダルで表示する
+  # 上長宛ての申請中の残業申請（お知らせ）を申請者ごとに表示する
   def received
-    @overtime_requests = current_user.received_overtime_requests
-                                     .status_pending
-                                     .includes(:user)
-                                     .order(:worked_on)
+    @overtime_requests_by_user = current_user.received_overtime_requests
+                                             .status_pending
+                                             .includes(:user)
+                                             .order(:worked_on)
+                                             .group_by(&:user)
     render partial: 'overtime_requests/received'
   end
 

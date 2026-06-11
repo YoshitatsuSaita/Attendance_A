@@ -28,4 +28,13 @@ module OvertimeRequestsHelper
   def format_overtime_duration(minutes)
     format('%<h>d:%<m>02d', h: minutes / 60, m: minutes % 60)
   end
+
+  # 終了予定時間の「時」。翌日にまたがる場合は 24 を加算して表示する
+  def scheduled_end_hour(overtime_request)
+    hour = overtime_request.scheduled_end_time.hour
+    return hour + 24 if overtime_request.scheduled_end_time.to_date >
+                        overtime_request.worked_on
+
+    hour
+  end
 end
