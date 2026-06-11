@@ -51,7 +51,10 @@
                           <%= check_box_tag "overtime_requests[#{req.id}][apply]", '1', false %>
                         </td>
                         <td>
-                          <%= link_to '勤怠を確認', '#', class: 'btn btn-default btn-xs' %>
+                          <%= link_to '確認',
+                                user_path(req.user,
+                                          date: req.worked_on.beginning_of_month),
+                                class: 'btn btn-primary' %>
                         </td>
                       </tr>
                     <% end %>

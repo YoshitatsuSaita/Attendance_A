@@ -8,7 +8,8 @@ class UsersController < ApplicationController
                          edit_basic_info update_basic_info
                          edit_all_basic_info update_all_basic_info
                          import working]
-  before_action :correct_user, only: %i[edit update show]
+  before_action :correct_user, only: %i[edit update]
+  before_action :correct_or_superior_user, only: :show
   before_action :admin_user,
                 only: %i[index destroy edit_basic_info
                          update_basic_info edit_all_basic_info

@@ -43,6 +43,14 @@ class ApplicationController < ActionController::Base
     redirect_to root_url
   end
 
+  # 本人または上長のみアクセス可（上長は他者の勤怠を閲覧可）
+  def correct_or_superior_user
+    return if current_user?(@user) || current_user.superior?
+
+    flash[:danger] = '権限がありません。'
+    redirect_to root_url
+  end
+
   # 管理ユーザーのみアクセス可（管理者専用ページ用）
   def admin_user_only
     return if current_user.admin?

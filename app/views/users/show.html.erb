@@ -1,20 +1,30 @@
 <% provide(:title, @user.name) %>
+<%# 自身の勤怠表のみ操作ボタンを表示する（他者閲覧時は全ボタン非表示） %>
+<% own = current_user?(@user) %>
 <div>
   <table class="table table-bordered table-condensed user-table">
     <tr>
       <td>
         <% if params[:mode] == 'week' %>
           <%# 週ナビゲーション（前週: -7日、次週: +7日、mode引き継ぎ） %>
-          <%= link_to "◀", user_path(date: @first_day - 7, mode: 'week'), class: "btn btn-primary btn-xs" %>
+          <% if own %>
+            <%= link_to "◀", user_path(date: @first_day - 7, mode: 'week'), class: "btn btn-primary btn-xs" %>
+          <% end %>
           <%= @first_day.year %>年
           <%= l(@first_day, format: "%-m/%-d") %> ~
           <%= l(@last_day, format: "%-m/%-d") %> 時間管理表
-          <%= link_to "▶", user_path(date: @first_day + 7, mode: 'week'), class: "btn btn-primary btn-xs" %>
+          <% if own %>
+            <%= link_to "▶", user_path(date: @first_day + 7, mode: 'week'), class: "btn btn-primary btn-xs" %>
+          <% end %>
         <% else %>
           <%# 月ナビゲーション（既存のまま） %>
-          <%= link_to "◀", user_path(date: @first_day.prev_month), class: "btn btn-primary btn-xs" %>
+          <% if own %>
+            <%= link_to "◀", user_path(date: @first_day.prev_month), class: "btn btn-primary btn-xs" %>
+          <% end %>
           <%= l(@first_day, format: :middle) %> 時間管理表
-          <%= link_to "▶", user_path(date: @first_day.next_month), class: "btn btn-primary btn-xs" %>
+          <% if own %>
+            <%= link_to "▶", user_path(date: @first_day.next_month), class: "btn btn-primary btn-xs" %>
+          <% end %>
         <% end %>
       </td>
       <td>指定勤務時間：<%= format_basic_info(@user.work_time) %></td>
@@ -35,7 +45,7 @@
     </tr>
   </table>
 </div>
-<% if current_user.superior? %>
+<% if own && current_user.superior? %>
   <div class="notice-links">
     <div class="notice-links__item">
       <%= link_to "【残業申請のお知らせ #{@pending_overtime_count}件】",
@@ -53,19 +63,21 @@
     </div>
   </div>
 <% end %>
-<div class="btn-users-show">
-  <%= link_to "勤怠を編集",
-      attendances_edit_one_month_user_path(date: @first_day, mode: params[:mode]),
-      class: "btn btn-primary"
-      %>
-  <%= link_to "CSVを出力", "#", class: "btn btn-primary" %>
-  <%= link_to "勤怠修正ログ（承認済）", "#", class: "btn btn-primary" %>
-  <% if params[:mode] == 'week' %>
-    <%= link_to "月表示", user_path(mode: 'month'), class: "btn btn-primary pull-right" %>
-  <% else %>
-    <%= link_to "週表示", user_path(mode: 'week'),  class: "btn btn-primary pull-right" %>
-  <% end %>
-</div>
+<% if own %>
+  <div class="btn-users-show">
+    <%= link_to "勤怠を編集",
+        attendances_edit_one_month_user_path(date: @first_day, mode: params[:mode]),
+        class: "btn btn-primary"
+        %>
+    <%= link_to "CSVを出力", "#", class: "btn btn-primary" %>
+    <%= link_to "勤怠修正ログ（承認済）", "#", class: "btn btn-primary" %>
+    <% if params[:mode] == 'week' %>
+      <%= link_to "月表示", user_path(mode: 'month'), class: "btn btn-primary pull-right" %>
+    <% else %>
+      <%= link_to "週表示", user_path(mode: 'week'),  class: "btn btn-primary pull-right" %>
+    <% end %>
+  </div>
+<% end %>
 <div>
   <table class="table table-bordered table-condensed table-hover table-attendances">
     <thead>
@@ -100,16 +112,18 @@
       <% @attendances.each do |day| %>
         <tr>
           <td class="table-attendances__request-cell">
-            <%= link_to "残業申請",
-                new_overtime_request_path(worked_on: day.worked_on,
-                                          date: @first_day,
-                                          mode: params[:mode]),
-                data: { turbo_frame: 'modal' }, class: "btn btn-primary" %>
+            <% if own %>
+              <%= link_to "残業申請",
+                  new_overtime_request_path(worked_on: day.worked_on,
+                                            date: @first_day,
+                                            mode: params[:mode]),
+                  data: { turbo_frame: 'modal' }, class: "btn btn-primary" %>
+            <% end %>
           </td>
           <td><%= l(day.worked_on, format: :short) %></td>
           <td class="<%= weekday_color(day.worked_on) %>"><%= days_of_the_week[day.worked_on.wday] %></td>
           <td>
-            <% if btn_text = attendance_state(day) %>
+            <% if own && (btn_text = attendance_state(day)) %>
               <%= link_to "#{btn_text}登録", user_attendance_path(@user, day), data: { turbo_method: :patch }, class: "btn btn-primary btn-attendance" %>
             <% end %>
           </td>
@@ -149,15 +163,17 @@
         <td colspan="5">累計在社時間</td>
         <td colspan="2" rowspan="2" class="table-attendances__approval-request">
           <h4>所属長承認申請</h4>
-          <%= form_with url: "#", method: :post, local: true do |f| %>
-            <div class="form-group">
-              <%= f.label :superior_id, "申請先（上長）" %>
-              <%= f.select :superior_id,
-                  User.superiors.where.not(id: current_user.id).map { |u| [u.name, u.id] },
-                  { include_blank: "-- 選択 --" },
-                  class: "form-control" %>
-            </div>
-            <%= f.submit "申請", class: "btn btn-primary" %>
+          <% if own %>
+            <%= form_with url: "#", method: :post, local: true do |f| %>
+              <div class="form-group">
+                <%= f.label :superior_id, "申請先（上長）" %>
+                <%= f.select :superior_id,
+                    User.superiors.where.not(id: current_user.id).map { |u| [u.name, u.id] },
+                    { include_blank: "-- 選択 --" },
+                    class: "form-control" %>
+              </div>
+              <%= f.submit "申請", class: "btn btn-primary" %>
+            <% end %>
           <% end %>
         </td>
       </tr>
