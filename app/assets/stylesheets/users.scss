@@ -180,3 +180,22 @@
 .btn-attendance-change-request {
   margin: 15px 10px 0 0;
 }
+
+/* 所属長承認申請モーダルウインドウ */
+
+.approval-request__table {
+  > thead > tr > th,
+  > tbody > tr > td {
+    text-align: center;
+    vertical-align: middle;
+  }
+}
+
+.approval-request__applicant {
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.btn-approval-request {
+  margin: 15px 10px 0 0;
+}

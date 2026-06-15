@@ -45,6 +45,11 @@ class UsersController < ApplicationController
                                        .includes(:superior)
                                        .order(:created_at)
                                        .index_by(&:worked_on)
+    @approval_request = @user.approval_requests
+                             .where(target_month: @first_day)
+                             .includes(:superior)
+                             .order(:created_at)
+                             .last
     set_pending_request_counts
     respond_to do |format|
       format.html

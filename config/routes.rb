@@ -35,4 +35,10 @@ Rails.application.routes.draw do
       patch :review
     end
   end
+  resources :approval_requests, only: %i[create] do
+    collection do
+      get :received
+      patch :review
+    end
+  end
 end

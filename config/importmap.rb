@@ -6,3 +6,4 @@
   pin "controllers/file_input_controller", to: "controllers/file_input_controller.js"
   pin "controllers/overtime_request_controller", to: "controllers/overtime_request_controller.js"
   pin "controllers/attendance_change_request_controller", to: "controllers/attendance_change_request_controller.js"
+  pin "controllers/approval_request_controller", to: "controllers/approval_request_controller.js"

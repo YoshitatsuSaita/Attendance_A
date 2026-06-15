@@ -15,3 +15,6 @@ application.register("overtime-request", OvertimeRequestController);
 
 import AttendanceChangeRequestController from "controllers/attendance_change_request_controller";
 application.register("attendance-change-request", AttendanceChangeRequestController);
+
+import ApprovalRequestController from "controllers/approval_request_controller";
+application.register("approval-request", ApprovalRequestController);

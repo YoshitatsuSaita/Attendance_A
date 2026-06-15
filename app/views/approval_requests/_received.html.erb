@@ -1,0 +1,64 @@
+<%= turbo_frame_tag 'modal' do %>
+  <div class="modal" style="display: block;" data-controller="approval-request">
+    <div class="modal-dialog modal-lg modal-dialog-center">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-action="approval-request#close" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+          <h1 class="modal-title">所属長承認申請のお知らせ</h1>
+        </div>
+        <div class="modal-body">
+          <% if @approval_requests_by_user.empty? %>
+            <p class="center">未処理の所属長承認申請はありません。</p>
+          <% else %>
+            <%= form_with(url: review_approval_requests_path, method: :patch, data: { turbo: false }) do %>
+              <%= hidden_field_tag :date, params[:date] %>
+              <%= hidden_field_tag :mode, params[:mode] %>
+              <% @approval_requests_by_user.each do |user, requests| %>
+                <h4 class="approval-request__applicant">【<%= user.name %> からの所属長承認申請】</h4>
+                <table class="table table-bordered table-condensed approval-request__table">
+                  <thead>
+                    <tr>
+                      <th>月</th>
+                      <th>指示者確認</th>
+                      <th>変更</th>
+                      <th>勤怠</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% requests.each do |req| %>
+                      <tr>
+                        <td><%= l(req.target_month, format: :middle) %></td>
+                        <td>
+                          <%= select_tag "approval_requests[#{req.id}][status]",
+                                options_for_select(approval_status_options, req.status),
+                                class: 'form-control' %>
+                        </td>
+                        <td>
+                          <%= check_box_tag "approval_requests[#{req.id}][apply]", '1', false %>
+                        </td>
+                        <td>
+                          <%= link_to '確認',
+                                user_path(req.user, date: req.target_month),
+                                class: 'btn btn-primary' %>
+                        </td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+              <% end %>
+
+              <div class="center">
+                <%= submit_tag '変更を反映', class: 'btn btn-primary btn-approval-request' %>
+                <button type="button" class="btn btn-default btn-approval-request" data-action="approval-request#close">
+                  閉じる
+                </button>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

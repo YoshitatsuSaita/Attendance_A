@@ -60,7 +60,9 @@
           class: notice_link_class(@pending_change_count) %>
     </div>
     <div class="notice-links__item">
-      <%= link_to "【所属長承認申請のお知らせ #{@pending_approval_count}件】", "#",
+      <%= link_to "【所属長承認申請のお知らせ #{@pending_approval_count}件】",
+          received_approval_requests_path(date: @first_day, mode: params[:mode]),
+          data: { turbo_frame: 'modal' },
           class: notice_link_class(@pending_approval_count) %>
     </div>
   </div>
@@ -166,12 +168,18 @@
         <td colspan="2" rowspan="2" class="table-attendances__approval-request">
           <h4>所属長承認申請</h4>
           <% if own %>
-            <%= form_with url: "#", method: :post, local: true do |f| %>
+            <% if @approval_request %>
+              <div><%= "#{@approval_request.superior.name} #{approval_status_label(@approval_request)}" %></div>
+            <% end %>
+            <%= form_with url: approval_requests_path, method: :post, local: true do |f| %>
+              <%= hidden_field_tag :date, @first_day %>
+              <%= hidden_field_tag :mode, params[:mode] %>
+              <%= hidden_field_tag "approval_request[target_month]", @first_day %>
               <div class="form-group">
-                <%= f.label :superior_id, "申請先（上長）" %>
-                <%= f.select :superior_id,
-                    User.superiors.where.not(id: current_user.id).map { |u| [u.name, u.id] },
-                    { include_blank: "-- 選択 --" },
+                <%= label_tag "approval_request[superior_id]", "申請先（上長）" %>
+                <%= select_tag "approval_request[superior_id]",
+                    options_for_select(User.superiors.where.not(id: current_user.id).map { |u| [u.name, u.id] }),
+                    include_blank: "-- 選択 --",
                     class: "form-control" %>
               </div>
               <%= f.submit "申請", class: "btn btn-primary" %>
