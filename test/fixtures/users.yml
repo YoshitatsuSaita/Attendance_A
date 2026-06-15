@@ -19,3 +19,9 @@ archer:
   email: archer@example.com
   password_digest: <%= BCrypt::Password.create('password') %>
   admin: false
+
+takashi:
+  name: takashi
+  email: takashi@example.com
+  password_digest: <%= BCrypt::Password.create('password') %>
+  admin: true

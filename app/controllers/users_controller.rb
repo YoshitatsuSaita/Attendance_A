@@ -54,6 +54,10 @@ class UsersController < ApplicationController
     respond_to do |format|
       format.html
       format.json { render json: @user }
+      format.csv do
+        send_data @attendances.to_csv,
+                  filename: attendance_csv_filename, type: 'text/csv'
+      end
     end
   end
 
@@ -168,6 +172,11 @@ class UsersController < ApplicationController
   end
 
   private
+
+  # 表示中の勤怠 CSV のファイル名を組み立てる
+  def attendance_csv_filename
+    "勤怠_#{@user.name}_#{@first_day.strftime('%Y-%m')}.csv"
+  end
 
   # 上長が受け取った未処理（申請中）の各種申請件数をセットする
   def set_pending_request_counts

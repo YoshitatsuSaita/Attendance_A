@@ -1,3 +1,5 @@
+require 'csv'
+
 # 勤怠情報を管理するモデル
 class Attendance < ApplicationRecord
   belongs_to :user
@@ -14,6 +16,29 @@ class Attendance < ApplicationRecord
   validate :future_edit_invalid, on: :update
   # 一括更新時、出勤時間のみの入力は無効
   validate :started_at_without_finished_at_is_invalid
+
+  WDAYS = %w[日 月 火 水 木 金 土].freeze
+  CSV_HEADERS = %w[日付 曜日 出社時間 退社時間].freeze
+
+  # 勤怠レコードを CSV 文字列に変換します。
+  # attendances テーブルは承認済みの値のみ保持するため、
+  # 未承認の変更申請は自動的に除外されます。
+  def self.to_csv
+    # Excel が UTF-8 として認識できるよう BOM を先頭に付与します。
+    bom = "\uFEFF"
+    csv_body = CSV.generate do |csv|
+      csv << CSV_HEADERS
+      order(:worked_on).each do |attendance|
+        csv << [
+          attendance.worked_on.strftime('%Y-%m-%d'),
+          WDAYS[attendance.worked_on.wday],
+          attendance.started_at&.strftime('%H:%M'),
+          attendance.finished_at&.strftime('%H:%M')
+        ]
+      end
+    end
+    bom + csv_body
+  end
 
   def finished_at_is_invalid_without_a_started_at
     return unless started_at.blank? && finished_at.present?

@@ -23,7 +23,8 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test '名前で検索すると一致するユーザーが表示される' do
-    post login_url, params: { session: { email: 'michael@example.com', password:
+    # index は自身を除外するため、検索対象とは別の管理者でログインする
+    post login_url, params: { session: { email: 'takashi@example.com', password:
   'password' } }
     get users_url, params: { q: 'mic' }
     assert_match 'michael', response.body
