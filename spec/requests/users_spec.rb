@@ -3,14 +3,21 @@ require 'rails_helper'
 RSpec.describe 'Users', type: :request do
   describe 'GET index' do
     let(:user) { create(:user) }
+    # index は管理者のみ・自己除外のため、一覧に含めない別管理者でログインする
+    let(:admin) { create(:user, admin: true) }
 
     context 'ユーザーが5件存在する場合' do
-      let!(:users) { create_list(:user, 4) + [user] }
+      let(:users) { create_list(:user, 4) + [user] }
 
       before do
+        # 他テスト(Minitest)のフィクスチャがコミット残存し件数がぶれるため、
+        # 一旦クリアしてからテストデータを作成して件数を確定させる
+        Attendance.delete_all
+        User.delete_all
+        users
         post login_path,
-             params: { session: { email: user.email,
-                                  password: user.password } }
+             params: { session: { email: admin.email,
+                                  password: admin.password } }
         get users_path, as: :json
       end
 
@@ -32,9 +39,6 @@ RSpec.describe 'Users', type: :request do
             'email' => user.email,
             'created_at' => user.created_at.as_json,
             'updated_at' => user.updated_at.as_json,
-            'password_digest' => user.password_digest,
-            'remember_digest' => user.remember_digest,
-            'admin' => user.admin,
             'department' => user.department,
             'basic_time' => user.basic_time.as_json,
             'work_time' => user.work_time.as_json
@@ -45,7 +49,7 @@ RSpec.describe 'Users', type: :request do
 
       # ページネーションに関するテスト
       context 'ページネーションを含む場合' do
-        let!(:users) { create_list(:user, 34) + [user] }
+        let(:users) { create_list(:user, 34) + [user] }
 
         it '1ページ目に30件のユーザを返す' do
           get users_path, params: { page: 1 }, as: :json
@@ -66,6 +70,9 @@ RSpec.describe 'Users', type: :request do
     let(:user) { create(:user) }
 
     before do
+      post login_path,
+           params: { session: { email: user.email,
+                                password: user.password } }
       get user_path(user), as: :json
     end
 
@@ -82,9 +89,6 @@ RSpec.describe 'Users', type: :request do
           'email' => user.email,
           'created_at' => user.created_at.as_json,
           'updated_at' => user.updated_at.as_json,
-          'password_digest' => user.password_digest,
-          'remember_digest' => user.remember_digest,
-          'admin' => user.admin,
           'department' => user.department,
           'basic_time' => user.basic_time.as_json,
           'work_time' => user.work_time.as_json
@@ -105,17 +109,15 @@ RSpec.describe 'Users', type: :request do
 
     it '新しいユーザーインスタンスが生成される' do
       json_response = response.parsed_body
+      # basic_time/work_time はデータベースのデフォルト値
       expected_data = {
-        'admin' => nil,
-        'basic_time' => '2026-04-13T08:00:00.000+09:00', # データベースのデフォルト値に更新
-        'work_time' => '2026-04-13T07:30:00.000+09:00', # データベースのデフォルト値に更新
+        'basic_time' => '2026-05-23T08:00:00.000+09:00',
+        'work_time' => '2026-05-23T07:30:00.000+09:00',
         'created_at' => nil,
         'department' => nil,
         'email' => nil,
         'id' => nil,
         'name' => nil,
-        'password_digest' => nil,
-        'remember_digest' => nil,
         'updated_at' => nil
       }
       expect(json_response).to eq(expected_data)
@@ -141,17 +143,15 @@ RSpec.describe 'Users', type: :request do
       it 'ユーザーが生成される' do
         # basic_time/work_time はデータベースのデフォルト値
         expect(json_response).to include({
-                                           'admin' => nil,
                                            'basic_time' =>
-                                             '2026-04-13T08:00:00.000+09:00',
+                                             '2026-05-23T08:00:00.000+09:00',
                                            'work_time' =>
-                                             '2026-04-13T07:30:00.000+09:00',
+                                             '2026-05-23T07:30:00.000+09:00',
                                            'department' => nil,
                                            'email' => 'test@example.com',
                                            'name' => 'Test User'
                                          })
-        expect(json_response).to include('id', 'created_at', 'updated_at',
-                                         'password_digest')
+        expect(json_response).to include('id', 'created_at', 'updated_at')
       end
 
       it 'ユーザーがデータベースに保存される' do
