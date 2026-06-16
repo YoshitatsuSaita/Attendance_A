@@ -15,10 +15,16 @@ class AttendanceChangeRequest < ApplicationRecord
   validate :finished_after_started
 
   before_validation :assemble_after_times
-  after_update :reflect_to_attendance,
+  after_update :apply_approval,
                if: -> { saved_change_to_status? && status_approved? }
 
   private
+
+  # 承認時の反映処理。勤怠（実績）を更新し、修正ログを残す。
+  def apply_approval
+    reflect_to_attendance
+    record_correction_log
+  end
 
   # 承認時、申請者の該当日の勤怠（実績）へ変更後の時刻・備考を反映する
   def reflect_to_attendance
@@ -28,6 +34,19 @@ class AttendanceChangeRequest < ApplicationRecord
     attendance.update!(started_at: after_started_at,
                        finished_at: after_finished_at,
                        note: note)
+  end
+
+  # 承認時、変更前後の時刻と承認者（上長）を修正ログとして記録する
+  def record_correction_log
+    AttendanceCorrectionLog.create!(
+      user_id: user_id,
+      worked_on: worked_on,
+      before_started_at: before_started_at,
+      before_finished_at: before_finished_at,
+      after_started_at: after_started_at,
+      after_finished_at: after_finished_at,
+      approver_id: superior_id
+    )
   end
 
   # 入力時刻を worked_on（退社が翌日なら翌日）の時刻に変換する。
