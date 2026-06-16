@@ -1,0 +1,65 @@
+<% provide(:title, '勤怠修正ログ') %>
+<h1>勤怠ログ</h1>
+
+<div class="col-md-10 col-md-offset-1">
+  <div class="correction-logs__controls">
+    <div class="correction-logs__control">
+      <%= link_to 'リセット', attendance_correction_logs_path,
+                  class: 'btn btn-primary' %>
+    </div>
+    <%= form_with(url: attendance_correction_logs_path, method: :get,
+                  local: true) do %>
+      <div class="correction-logs__control">
+        <%= select_tag :year,
+              options_for_select(
+                @recorded_years.map { |year| ["#{year}年", year] },
+                @selected_year&.to_i
+              ),
+              include_blank: '年', class: 'form-control',
+              onchange: 'this.form.requestSubmit();' %>
+      </div>
+      <div class="correction-logs__control">
+        <%= select_tag :month,
+              options_for_select(correction_log_month_options,
+                                 @selected_month&.to_i),
+              include_blank: '月', class: 'form-control',
+              onchange: 'this.form.requestSubmit();' %>
+      </div>
+    <% end %>
+  </div>
+
+  <table class="table table-bordered table-condensed table-correction-logs">
+    <thead>
+      <tr>
+        <th class="center">日付</th>
+        <th class="center">曜日</th>
+        <th class="center">変更前出社時間</th>
+        <th class="center">変更前退社時間</th>
+        <th class="center">変更後出社時間</th>
+        <th class="center">変更後退社時間</th>
+        <th class="center">承認者</th>
+        <th class="center">承認日</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @histories.each do |history| %>
+        <tr>
+          <td class="center"><%= l(history.worked_on, format: :default) %></td>
+          <td class="center <%= weekday_color(history.worked_on) %>">
+            <%= days_of_the_week[history.worked_on.wday] %>
+          </td>
+          <td class="center"><%= history.before_started_at&.strftime('%H:%M') %></td>
+          <td class="center"><%= history.before_finished_at&.strftime('%H:%M') %></td>
+          <td class="center"><%= history.after_started_at&.strftime('%H:%M') %></td>
+          <td class="center"><%= history.after_finished_at&.strftime('%H:%M') %></td>
+          <td class="center"><%= history.approver&.name %></td>
+          <td class="center"><%= l(history.approved_at.to_date, format: :default) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <% if @histories.empty? %>
+    <p class="center">承認済みの勤怠修正履歴はありません。</p>
+  <% end %>
+</div>

@@ -76,7 +76,8 @@
     <%= link_to "CSVを出力",
         user_path(@user, format: :csv, date: @first_day, mode: params[:mode]),
         data: { turbo: false }, class: "btn btn-primary" %>
-    <%= link_to "勤怠修正ログ（承認済）", "#", class: "btn btn-primary" %>
+    <%= link_to "勤怠修正ログ（承認済）", attendance_correction_logs_path,
+        class: "btn btn-primary" %>
     <% if params[:mode] == 'week' %>
       <%= link_to "月表示", user_path(mode: 'month'), class: "btn btn-primary pull-right" %>
     <% else %>

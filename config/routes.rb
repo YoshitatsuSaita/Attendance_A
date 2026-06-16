@@ -41,4 +41,5 @@ Rails.application.routes.draw do
       patch :review
     end
   end
+  resources :attendance_correction_logs, only: %i[index]
 end
