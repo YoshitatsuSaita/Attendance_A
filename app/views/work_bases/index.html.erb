@@ -20,11 +20,11 @@
             <%= t("enums.work_base.attendance_type.#{work_base.attendance_type}") %>
           </td>
           <td class="center">
-            <%= link_to '編集', edit_work_base_path(work_base), class: "btn btn-primary btn-xs" %>
+            <%= link_to '編集', edit_work_base_path(work_base), class: "btn btn-primary" %>
             <%= link_to '削除', work_base,
                 data: { turbo_method: :delete,
                         turbo_confirm: "#{work_base.name}を削除してよろしいですか？" },
-                class: "btn btn-danger btn-xs" %>
+                class: "btn btn-danger" %>
           </td>
         </tr>
       <% end %>
