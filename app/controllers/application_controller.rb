@@ -146,4 +146,28 @@ class ApplicationController < ActionController::Base
       set_one_month # デフォルトは月表示
     end
   end
+
+  # 承認モーダルで「変更」にチェックされた行のみ status を反映し、
+  # 反映結果（〇件中〇件、0件なら警告）をフラッシュに設定する。
+  def apply_review(scope, rows, label)
+    applied = 0
+    ActiveRecord::Base.transaction do
+      rows.each do |id, item|
+        next unless item[:apply] == '1'
+
+        scope.find(id).update!(status: item[:status])
+        applied += 1
+      end
+    end
+    set_review_flash(applied, rows.keys.size, label)
+  end
+
+  # 反映件数に応じてフラッシュメッセージを設定する
+  def set_review_flash(applied, total, label)
+    if applied.zero?
+      flash[:warning] = "更新された#{label}がありません。"
+    else
+      flash[:success] = "#{total}件中#{applied}件の#{label}を更新しました。"
+    end
+  end
 end

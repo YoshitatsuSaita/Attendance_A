@@ -17,15 +17,8 @@ class AttendanceChangeRequestsController < ApplicationController
 
   # 変更チェックの付いた行のみ指示者確認欄（status）を反映する
   def review
-    ActiveRecord::Base.transaction do
-      review_params.each do |id, item|
-        next unless item[:apply] == '1'
-
-        current_user.received_attendance_change_requests
-                    .find(id).update!(status: item[:status])
-      end
-    end
-    flash[:success] = '勤怠変更申請を更新しました。'
+    apply_review(current_user.received_attendance_change_requests,
+                 review_params, '勤怠変更申請')
     redirect_to user_url(current_user, date: params[:date], mode: params[:mode])
   end
 
