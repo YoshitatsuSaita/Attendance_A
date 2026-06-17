@@ -39,7 +39,7 @@ RSpec.describe 'Users', type: :request do
             'email' => user.email,
             'created_at' => user.created_at.as_json,
             'updated_at' => user.updated_at.as_json,
-            'department' => user.department,
+            'affiliation' => user.affiliation,
             'basic_time' => user.basic_time.as_json,
             'work_time' => user.work_time.as_json
           }
@@ -89,7 +89,7 @@ RSpec.describe 'Users', type: :request do
           'email' => user.email,
           'created_at' => user.created_at.as_json,
           'updated_at' => user.updated_at.as_json,
-          'department' => user.department,
+          'affiliation' => user.affiliation,
           'basic_time' => user.basic_time.as_json,
           'work_time' => user.work_time.as_json
         }
@@ -114,7 +114,7 @@ RSpec.describe 'Users', type: :request do
         'basic_time' => '2026-05-23T08:00:00.000+09:00',
         'work_time' => '2026-05-23T07:30:00.000+09:00',
         'created_at' => nil,
-        'department' => nil,
+        'affiliation' => nil,
         'email' => nil,
         'id' => nil,
         'name' => nil,
@@ -147,7 +147,7 @@ RSpec.describe 'Users', type: :request do
                                              '2026-05-23T08:00:00.000+09:00',
                                            'work_time' =>
                                              '2026-05-23T07:30:00.000+09:00',
-                                           'department' => nil,
+                                           'affiliation' => nil,
                                            'email' => 'test@example.com',
                                            'name' => 'Test User'
                                          })

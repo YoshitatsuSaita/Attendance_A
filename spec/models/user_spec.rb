@@ -107,7 +107,7 @@ RSpec.describe User, type: :model do
   describe '#as_json' do
     it '許可されたキーのみ含む' do
       json = user.as_json
-      expect(json.keys).to match_array(%w[id name email department basic_time
+      expect(json.keys).to match_array(%w[id name email affiliation basic_time
                                           work_time created_at updated_at])
     end
 

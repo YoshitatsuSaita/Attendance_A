@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_06_09_010101) do
+ActiveRecord::Schema[7.1].define(version: 2026_06_17_060137) do
   create_table "approval_requests", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "superior_id", null: false
@@ -85,7 +85,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_06_09_010101) do
     t.string "password_digest"
     t.string "remember_digest"
     t.boolean "admin"
-    t.string "department"
+    t.string "affiliation"
     t.datetime "basic_time", default: "2026-05-22 23:00:00"
     t.datetime "work_time", default: "2026-05-22 22:30:00"
     t.boolean "superior", default: false, null: false

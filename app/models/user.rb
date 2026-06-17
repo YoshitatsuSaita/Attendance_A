@@ -31,7 +31,7 @@ class User < ApplicationRecord
   validates :email, presence: true, length: { maximum: 100 },
                     format: { with: VALID_EMAIL_REGEX },
                     uniqueness: true
-  validates :department, length: { in: 2..30 }, allow_blank: true
+  validates :affiliation, length: { in: 2..30 }, allow_blank: true
   validates :basic_time, presence: true
   validates :work_time, presence: true
   has_secure_password
@@ -45,7 +45,7 @@ class User < ApplicationRecord
 
   # CSVヘッダーと取り込む属性の対応を定義します。
   CSV_ATTRIBUTES = %w[
-    name email department employee_number uid
+    name email affiliation employee_number uid basic_work_time
     designated_work_start_time designated_work_end_time
     password superior admin
   ].freeze
@@ -57,9 +57,10 @@ class User < ApplicationRecord
         user = find_or_initialize_by(email: row['email'])
         user.assign_attributes(
           name: row['name'],
-          department: row['department'],
+          affiliation: row['affiliation'],
           employee_number: row['employee_number'],
           uid: row['uid'],
+          work_time: row['basic_work_time'],
           designated_work_start_time: row['designated_work_start_time'],
           designated_work_end_time: row['designated_work_end_time'],
           superior: to_boolean(row['superior']),
@@ -120,7 +121,7 @@ class User < ApplicationRecord
   end
 
   def as_json(options = {})
-    super({ only: %i[id name email department basic_time work_time
+    super({ only: %i[id name email affiliation basic_time work_time
                      created_at updated_at] }.merge(options))
   end
 
