@@ -1,7 +1,6 @@
 <% provide(:title, @user.name) %>
 <%= form_with(model: @user, url: attendance_change_requests_path, method: :post, local: true) do |f| %>
 <%= hidden_field_tag :date, @first_day %>
-<%= hidden_field_tag :mode, params[:mode] %>
 <div>
   <h1>勤怠変更申請画面</h1>
   <table class="table table-bordered table-condensed table-hover table-attendances">
@@ -54,7 +53,7 @@
 
 <div class="center">
   <%= f.submit "まとめて申請", class: "btn btn-lg btn-primary" %>
-  <%= link_to "キャンセル", user_path(date: @first_day, mode: params[:mode]), class: "btn btn-lg btn-danger" %>
+  <%= link_to "キャンセル", user_path(date: @first_day), class: "btn btn-lg btn-danger" %>
 </div>
 
 <% end %>

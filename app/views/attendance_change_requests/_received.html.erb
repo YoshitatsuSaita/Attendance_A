@@ -14,7 +14,6 @@
           <% else %>
             <%= form_with(url: review_attendance_change_requests_path, method: :patch, data: { turbo: false }) do %>
               <%= hidden_field_tag :date, params[:date] %>
-              <%= hidden_field_tag :mode, params[:mode] %>
               <% @change_requests_by_user.each do |user, requests| %>
                 <h4 class="attendance-change-request__applicant">【<%= user.name %> からの勤怠変更申請】</h4>
                 <table class="table table-bordered table-condensed attendance-change-request__table">

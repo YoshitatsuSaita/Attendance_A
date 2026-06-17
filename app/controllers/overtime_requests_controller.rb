@@ -25,7 +25,7 @@ class OvertimeRequestsController < ApplicationController
   def review
     apply_review(current_user.received_overtime_requests,
                  review_params, '残業申請')
-    redirect_to user_url(current_user, date: params[:date], mode: params[:mode])
+    redirect_to user_url(current_user, date: params[:date])
   end
 
   def create
@@ -40,12 +40,10 @@ class OvertimeRequestsController < ApplicationController
       @overtime_request.save!
     end
     flash[:success] = '残業申請を送信しました。'
-    redirect_to user_url(current_user, date: params[:date],
-                                       mode: params[:mode])
+    redirect_to user_url(current_user, date: params[:date])
   rescue ActiveRecord::RecordInvalid
     flash[:danger] = @overtime_request.errors.full_messages.join('<br>')
-    redirect_to user_url(current_user, date: params[:date],
-                                       mode: params[:mode])
+    redirect_to user_url(current_user, date: params[:date])
   end
 
   private

@@ -19,7 +19,7 @@ class AttendanceChangeRequestsController < ApplicationController
   def review
     apply_review(current_user.received_attendance_change_requests,
                  review_params, '勤怠変更申請')
-    redirect_to user_url(current_user, date: params[:date], mode: params[:mode])
+    redirect_to user_url(current_user, date: params[:date])
   end
 
   def create
@@ -34,12 +34,11 @@ class AttendanceChangeRequestsController < ApplicationController
       end
     end
     flash[:success] = '勤怠変更申請を送信しました。'
-    redirect_to user_url(current_user, date: params[:date], mode: params[:mode])
+    redirect_to user_url(current_user, date: params[:date])
   rescue ActiveRecord::RecordInvalid => e
     flash[:danger] = e.record.errors.full_messages.join('<br>')
     redirect_to attendances_edit_one_month_user_url(current_user,
-                                                    date: params[:date],
-                                                    mode: params[:mode])
+                                                    date: params[:date])
   end
 
   private

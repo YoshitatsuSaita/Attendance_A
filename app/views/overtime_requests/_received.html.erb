@@ -14,7 +14,6 @@
           <% else %>
             <%= form_with(url: review_overtime_requests_path, method: :patch, data: { turbo: false }) do %>
               <%= hidden_field_tag :date, params[:date] %>
-              <%= hidden_field_tag :mode, params[:mode] %>
               <% @overtime_requests_by_user.each do |user, requests| %>
                 <h4 class="overtime-request__applicant">【<%= user.name %> からの残業申請】</h4>
                 <table class="table table-bordered table-condensed overtime-request__table">

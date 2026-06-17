@@ -4,24 +4,24 @@
 <%= form_with(model: user, url: update_basic_info_user_path(user),
               method: :patch, class: 'basic-info-form') do |f| %>
   <div class="row">
-    <div class="col-md-6 basic-info-form__group">
+    <div class="col-md-12 basic-info-form__group">
       <%= f.label :name, class: 'basic-info-form__label', for: "#{pfx}-name" %>
       <%= f.text_field :name, class: 'form-control', id: "#{pfx}-name" %>
     </div>
-    <div class="col-md-6 basic-info-form__group">
+    <div class="col-md-12 basic-info-form__group">
       <%= f.label :email, class: 'basic-info-form__label', for: "#{pfx}-email" %>
       <%= f.email_field :email, class: 'form-control', id: "#{pfx}-email" %>
     </div>
   </div>
 
   <div class="row">
-    <div class="col-md-6 basic-info-form__group">
+    <div class="col-md-12 basic-info-form__group">
       <%= f.label :affiliation, class: 'basic-info-form__label',
                   for: "#{pfx}-affiliation" %>
       <%= f.text_field :affiliation, class: 'form-control',
                        id: "#{pfx}-affiliation" %>
     </div>
-    <div class="col-md-6 basic-info-form__group">
+    <div class="col-md-12 basic-info-form__group">
       <%= f.label :employee_number, class: 'basic-info-form__label',
                   for: "#{pfx}-employee-number" %>
       <%= f.text_field :employee_number, class: 'form-control',
@@ -30,11 +30,11 @@
   </div>
 
   <div class="row">
-    <div class="col-md-6 basic-info-form__group">
+    <div class="col-md-12 basic-info-form__group">
       <%= f.label :uid, class: 'basic-info-form__label', for: "#{pfx}-uid" %>
       <%= f.text_field :uid, class: 'form-control', id: "#{pfx}-uid" %>
     </div>
-    <div class="col-md-6 basic-info-form__group">
+    <div class="col-md-12 basic-info-form__group">
       <%= f.label :work_time, class: 'basic-info-form__label',
                   for: "#{pfx}-work-time" %>
       <%= f.time_field :work_time, class: 'form-control',
@@ -43,13 +43,13 @@
   </div>
 
   <div class="row">
-    <div class="col-md-6 basic-info-form__group">
+    <div class="col-md-12 basic-info-form__group">
       <%= f.label :designated_work_start_time, class: 'basic-info-form__label',
                   for: "#{pfx}-start-time" %>
       <%= f.time_field :designated_work_start_time, class: 'form-control',
                        id: "#{pfx}-start-time" %>
     </div>
-    <div class="col-md-6 basic-info-form__group">
+    <div class="col-md-12 basic-info-form__group">
       <%= f.label :designated_work_end_time, class: 'basic-info-form__label',
                   for: "#{pfx}-end-time" %>
       <%= f.time_field :designated_work_end_time, class: 'form-control',
@@ -58,14 +58,14 @@
   </div>
 
   <div class="row">
-    <div class="col-md-6 basic-info-form__group">
+    <div class="col-md-12 basic-info-form__group">
       <%= f.label :password, class: 'basic-info-form__label',
                   for: "#{pfx}-password" %>
       <%= f.password_field :password, class: 'form-control',
                            id: "#{pfx}-password",
                            placeholder: '変更する場合のみ入力' %>
     </div>
-    <div class="col-md-6 basic-info-form__group">
+    <div class="col-md-12 basic-info-form__group">
       <%= f.label :password_confirmation, class: 'basic-info-form__label',
                   for: "#{pfx}-password-confirmation" %>
       <%= f.password_field :password_confirmation, class: 'form-control',

@@ -4,7 +4,7 @@ class AttendancesController < ApplicationController
   before_action :logged_in_user, only: %i[update edit_one_month]
   before_action :not_admin, only: %i[update edit_one_month]
   before_action :correct_user_only, only: %i[update edit_one_month]
-  before_action :set_attendance_period, only: :edit_one_month
+  before_action :set_one_month, only: :edit_one_month
   before_action :set_superiors, only: :edit_one_month
 
   UPDATE_ERROR_MSG = '勤怠登録に失敗しました。やり直してください。'.freeze
