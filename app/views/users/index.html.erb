@@ -44,17 +44,14 @@
       <tr>
         <td>
           <%= user.name %>
-          <% if user.superior? %>
-            <span class="label label-info">上長</span>
-          <% end %>
         </td>
         <td class="center">
           <button type="button" class="btn btn-primary"
                   data-action="basic-info-accordion#toggle"
                   data-basic-info-accordion-id-param="<%= user.id %>">
-            基本情報編集
+            編集
           </button>
-          <%= link_to "削除", user, data: { turbo_method: :delete, turbo_confirm: "#{user.name}を削除してよろしいですか？" }, class: "btn btn-danger" %>
+          <%= link_to "削除", user, data: { turbo_method: :delete, turbo_confirm: "#{user.name}を削除してよろしいですか？" }, class: "btn btn-primary" %>
         </td>
       </tr>
       <tr class="basic-info-accordion__panel"
