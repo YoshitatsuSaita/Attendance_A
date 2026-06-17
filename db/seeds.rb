@@ -16,7 +16,7 @@ User.create!(name: "管理者",
              admin: true,
              superior: false)
 
-User.create!(name: "テストユーザー",
+User.create!(name: "一般社員",
              email: "test@example.com",
              password: "password",
              password_confirmation: "password",

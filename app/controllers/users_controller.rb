@@ -8,6 +8,7 @@ class UsersController < ApplicationController
                          edit_all_basic_info update_all_basic_info
                          import working]
   before_action :correct_user, only: %i[edit update]
+  before_action :reject_admin_self_edit, only: %i[edit update]
   before_action :correct_or_superior_user, only: :show
   before_action :admin_user,
                 only: %i[index destroy update_basic_info
@@ -208,6 +209,13 @@ class UsersController < ApplicationController
       :basic_time, :work_time,
       :designated_work_start_time, :designated_work_end_time
     )
+  end
+
+  def reject_admin_self_edit
+    return unless current_user.admin? && current_user?(@user)
+
+    flash[:danger] = '管理者は自身のユーザー情報を編集できません。'
+    redirect_to root_url
   end
 
   def prevent_self_destroy
