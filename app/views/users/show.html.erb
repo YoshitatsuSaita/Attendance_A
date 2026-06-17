@@ -62,6 +62,7 @@
     <%= link_to "CSVを出力",
         user_path(@user, format: :csv, date: @first_day),
         data: { turbo: false }, class: "btn btn-primary" %>
+    <br>
     <%= link_to "勤怠修正ログ（承認済）", attendance_correction_logs_path,
         class: "btn btn-primary" %>
   </div>
