@@ -178,16 +178,22 @@ class UsersController < ApplicationController
     "勤怠_#{@user.name}_#{@first_day.strftime('%Y-%m')}.csv"
   end
 
-  # 上長が受け取った未処理（申請中）の各種申請件数をセットする
+  # 上長が受け取った申請中・否認済みの各種申請件数をセットする
   def set_pending_request_counts
     return unless current_user.superior?
 
     @pending_overtime_count =
       current_user.received_overtime_requests.status_pending.count
+    @rejected_overtime_count =
+      current_user.received_overtime_requests.status_rejected.count
     @pending_change_count =
       current_user.received_attendance_change_requests.status_pending.count
+    @rejected_change_count =
+      current_user.received_attendance_change_requests.status_rejected.count
     @pending_approval_count =
       current_user.received_approval_requests.status_pending.count
+    @rejected_approval_count =
+      current_user.received_approval_requests.status_rejected.count
   end
 
   def user_params

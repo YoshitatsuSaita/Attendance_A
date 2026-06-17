@@ -10,7 +10,7 @@
         </div>
         <div class="modal-body">
           <% if @approval_requests_by_user.empty? %>
-            <p class="center">未処理の所属長承認申請はありません。</p>
+            <p class="center">申請中・否認の所属長承認申請はありません。</p>
           <% else %>
             <%= form_with(url: review_approval_requests_path, method: :patch, data: { turbo: false }) do %>
               <%= hidden_field_tag :date, params[:date] %>

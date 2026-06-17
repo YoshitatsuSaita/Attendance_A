@@ -48,22 +48,22 @@
 <% if own && current_user.superior? %>
   <div class="notice-links">
     <div class="notice-links__item">
-      <%= link_to "【残業申請のお知らせ #{@pending_overtime_count}件】",
+      <%= link_to notice_label('残業申請', @pending_overtime_count, @rejected_overtime_count),
           received_overtime_requests_path(date: @first_day, mode: params[:mode]),
           data: { turbo_frame: 'modal' },
-          class: notice_link_class(@pending_overtime_count) %>
+          class: notice_link_class(@pending_overtime_count, @rejected_overtime_count) %>
     </div>
     <div class="notice-links__item">
-      <%= link_to "【勤怠変更申請のお知らせ #{@pending_change_count}件】",
+      <%= link_to notice_label('勤怠変更申請', @pending_change_count, @rejected_change_count),
           received_attendance_change_requests_path(date: @first_day, mode: params[:mode]),
           data: { turbo_frame: 'modal' },
-          class: notice_link_class(@pending_change_count) %>
+          class: notice_link_class(@pending_change_count, @rejected_change_count) %>
     </div>
     <div class="notice-links__item">
-      <%= link_to "【所属長承認申請のお知らせ #{@pending_approval_count}件】",
+      <%= link_to notice_label('所属長承認申請', @pending_approval_count, @rejected_approval_count),
           received_approval_requests_path(date: @first_day, mode: params[:mode]),
           data: { turbo_frame: 'modal' },
-          class: notice_link_class(@pending_approval_count) %>
+          class: notice_link_class(@pending_approval_count, @rejected_approval_count) %>
     </div>
   </div>
 <% end %>

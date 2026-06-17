@@ -5,11 +5,20 @@ module UsersHelper
     format('%.2f', ((time.hour * 60) + time.min) / 60.0)
   end
 
-  # お知らせリンクの色クラスを返す。未処理が1件以上あれば赤字にする。
-  def notice_link_class(count)
+  # お知らせリンクの色クラスを返す。申請中または否認が1件以上あれば赤字にする。
+  def notice_link_class(pending_count, rejected_count)
     base = 'notice-links__link'
-    return base unless count.to_i.positive?
+    return base unless pending_count.to_i.positive? || rejected_count.to_i.positive?
 
     "#{base} notice-links__link--alert"
+  end
+
+  # お知らせリンクのラベルを「申請中〇件 否認〇件」形式で組み立てる
+  def notice_label(title, pending_count, rejected_count)
+    parts = []
+    parts << "申請中#{pending_count}件" if pending_count.to_i.positive?
+    parts << "否認#{rejected_count}件" if rejected_count.to_i.positive?
+    suffix = parts.any? ? " #{parts.join(' ')}" : ''
+    "【#{title}のお知らせ#{suffix}】"
   end
 end

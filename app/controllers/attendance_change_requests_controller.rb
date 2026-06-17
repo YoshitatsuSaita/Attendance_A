@@ -4,11 +4,11 @@ class AttendanceChangeRequestsController < ApplicationController
   before_action :not_admin
   before_action :superior_user, only: %i[received review]
 
-  # 上長宛ての申請中の勤怠変更申請（お知らせ）を申請者ごとに表示する
+  # 上長宛ての申請中・否認済みの勤怠変更申請（お知らせ）を申請者ごとに表示する
   def received
     @change_requests_by_user =
       current_user.received_attendance_change_requests
-                  .status_pending
+                  .where(status: %i[pending rejected])
                   .includes(:user)
                   .order(:worked_on)
                   .group_by(&:user)
@@ -26,6 +26,10 @@ class AttendanceChangeRequestsController < ApplicationController
     ActiveRecord::Base.transaction do
       change_request_rows.each do |id, item|
         attendance = current_user.attendances.find(id)
+        current_user.attendance_change_requests
+                    .where(worked_on: attendance.worked_on)
+                    .where(status: %i[pending rejected])
+                    .destroy_all
         build_change_request(attendance, item).save!
       end
     end

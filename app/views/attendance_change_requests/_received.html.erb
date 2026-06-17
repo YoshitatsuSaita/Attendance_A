@@ -10,7 +10,7 @@
         </div>
         <div class="modal-body">
           <% if @change_requests_by_user.empty? %>
-            <p class="center">未処理の勤怠変更申請はありません。</p>
+            <p class="center">申請中・否認の勤怠変更申請はありません。</p>
           <% else %>
             <%= form_with(url: review_attendance_change_requests_path, method: :patch, data: { turbo: false }) do %>
               <%= hidden_field_tag :date, params[:date] %>

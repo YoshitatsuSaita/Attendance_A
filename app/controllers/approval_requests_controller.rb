@@ -4,10 +4,10 @@ class ApprovalRequestsController < ApplicationController
   before_action :not_admin
   before_action :superior_user, only: %i[received review]
 
-  # 上長宛ての申請中の所属長承認申請（お知らせ）を申請者ごとに表示する
+  # 上長宛ての申請中・否認済みの所属長承認申請（お知らせ）を申請者ごとに表示する
   def received
     @approval_requests_by_user = current_user.received_approval_requests
-                                             .status_pending
+                                             .where(status: %i[pending rejected])
                                              .includes(:user)
                                              .order(:target_month)
                                              .group_by(&:user)
@@ -25,11 +25,18 @@ class ApprovalRequestsController < ApplicationController
     @approval_request =
       current_user.approval_requests.build(approval_request_params)
     @approval_request.status = :pending
-    if @approval_request.save
-      flash[:success] = '所属長承認申請を送信しました。'
-    else
-      flash[:danger] = @approval_request.errors.full_messages.join('<br>')
+    ActiveRecord::Base.transaction do
+      current_user.approval_requests
+                  .where(target_month: @approval_request.target_month)
+                  .where(status: %i[pending rejected])
+                  .destroy_all
+      @approval_request.save!
     end
+    flash[:success] = '所属長承認申請を送信しました。'
+    redirect_to user_url(current_user, date: params[:date],
+                                       mode: params[:mode])
+  rescue ActiveRecord::RecordInvalid
+    flash[:danger] = @approval_request.errors.full_messages.join('<br>')
     redirect_to user_url(current_user, date: params[:date],
                                        mode: params[:mode])
   end

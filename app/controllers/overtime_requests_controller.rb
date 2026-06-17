@@ -11,10 +11,10 @@ class OvertimeRequestsController < ApplicationController
     render partial: 'overtime_requests/form'
   end
 
-  # 上長宛ての申請中の残業申請（お知らせ）を申請者ごとに表示する
+  # 上長宛ての申請中・否認済みの残業申請（お知らせ）を申請者ごとに表示する
   def received
     @overtime_requests_by_user = current_user.received_overtime_requests
-                                             .status_pending
+                                             .where(status: %i[pending rejected])
                                              .includes(:user)
                                              .order(:worked_on)
                                              .group_by(&:user)
@@ -32,11 +32,18 @@ class OvertimeRequestsController < ApplicationController
     @overtime_request =
       current_user.overtime_requests.build(overtime_request_params)
     @overtime_request.status = :pending
-    if @overtime_request.save
-      flash[:success] = '残業申請を送信しました。'
-    else
-      flash[:danger] = @overtime_request.errors.full_messages.join('<br>')
+    ActiveRecord::Base.transaction do
+      current_user.overtime_requests
+                  .where(worked_on: @overtime_request.worked_on)
+                  .where(status: %i[pending rejected])
+                  .destroy_all
+      @overtime_request.save!
     end
+    flash[:success] = '残業申請を送信しました。'
+    redirect_to user_url(current_user, date: params[:date],
+                                       mode: params[:mode])
+  rescue ActiveRecord::RecordInvalid
+    flash[:danger] = @overtime_request.errors.full_messages.join('<br>')
     redirect_to user_url(current_user, date: params[:date],
                                        mode: params[:mode])
   end

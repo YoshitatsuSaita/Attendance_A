@@ -10,7 +10,7 @@
         </div>
         <div class="modal-body">
           <% if @overtime_requests_by_user.empty? %>
-            <p class="center">未処理の残業申請はありません。</p>
+            <p class="center">申請中・否認の残業申請はありません。</p>
           <% else %>
             <%= form_with(url: review_overtime_requests_path, method: :patch, data: { turbo: false }) do %>
               <%= hidden_field_tag :date, params[:date] %>
