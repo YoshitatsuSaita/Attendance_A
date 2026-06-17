@@ -6,7 +6,12 @@ ja:
       work_base: 拠点
       overtime_request: 残業申請
       attendance_change_request: 勤怠変更申請
+      approval_request: 所属長承認申請
     attributes:
+      approval_request:
+        target_month: 対象月
+        superior: 申請先
+        status: 状態
       work_base:
         base_number: 拠点番号
         name: 拠点名
