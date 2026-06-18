@@ -90,6 +90,30 @@ docker compose exec web bin/rails db:create db:migrate db:seed
 
 ```
 
+## CSVインポートによるユーザー登録
+
+管理者画面からCSVファイルをインポートすることで、ユーザーの一括登録・更新が可能です。
+サンプルファイル: `db/sample_users_import.csv`
+
+### CSV仕様
+
+| ヘッダー名 | 必須 | 説明 | 例 |
+| --- | --- | --- | --- |
+| name | Yes | 氏名 | 山田太郎 |
+| email | Yes | メールアドレス（一意キー） | taro@example.com |
+| affiliation | Yes | 所属部署 | 開発部 |
+| employee_number | Yes | 社員番号 | EMP001 |
+| uid | Yes | カードID | U001 |
+| basic_work_time | Yes | 基本勤務時間 | 8:00 |
+| designated_work_start_time | Yes | 指定勤務開始時刻 | 09:00 |
+| designated_work_end_time | Yes | 指定勤務終了時刻 | 18:00 |
+| superior | Yes | 上長権限 (true / false) | false |
+| admin | Yes | 管理者権限 (true / false) | false |
+| password | 新規時のみ | パスワード（既存ユーザー更新時は空欄で変更なし） | password |
+
+- `email` が既存ユーザーと一致する場合は更新、一致しない場合は新規作成されます。
+- ファイルの文字コードは UTF-8 を使用してください。
+
 ## テスト実行
 
 ```bash
