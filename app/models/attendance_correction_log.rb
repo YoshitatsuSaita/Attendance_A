@@ -29,10 +29,11 @@ class AttendanceCorrectionLog < ApplicationRecord
   end
 
   def self.build_history(worked_on, logs)
+    first = logs.first
     History.new(
       worked_on: worked_on,
-      before_started_at: logs.first.before_started_at,
-      before_finished_at: logs.first.before_finished_at,
+      before_started_at: first.before_started_at || first.after_started_at,
+      before_finished_at: first.before_finished_at || first.after_finished_at,
       after_started_at: logs.last.after_started_at,
       after_finished_at: logs.last.after_finished_at,
       approver: logs.last.approver,

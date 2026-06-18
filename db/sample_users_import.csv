@@ -1,0 +1,4 @@
+name,email,affiliation,employee_number,uid,basic_work_time,designated_work_start_time,designated_work_end_time,superior,admin,password
+山田太郎,taro.yamada@example.com,開発部,EMP001,U001,8:00,09:00,18:00,false,false,password
+佐藤花子,hanako.sato@example.com,営業部,EMP002,U002,8:00,09:00,18:00,true,false,password
+鈴木一郎,ichiro.suzuki@example.com,人事部,EMP003,U003,8:00,09:00,18:00,false,true,password
